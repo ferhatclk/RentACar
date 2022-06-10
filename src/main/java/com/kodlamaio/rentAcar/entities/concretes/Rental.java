@@ -22,18 +22,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer","handler","cars"})
-@Table(name="maintenances")
-public class Maintenance {
-	@Id()
+@Table(name = "rentals")
+public class Rental {
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
 	
-	@Column(name = "datereturned")
-	private Date dateReturned;
+	@Column(name = "pickup_date")
+	private Date pickupDate;
 	
-	@Column(name="datesent")
-	private Date dateSent;
+	@Column(name = "return_date")
+	private Date returnDate;
+	
+	@Column(name = "total_days")
+	private long totalDays;
+	
+	@Column(name = "total_price")
+	private double totalPrice;
 	
 	@ManyToOne
 	@JoinColumn(name = "car_id")

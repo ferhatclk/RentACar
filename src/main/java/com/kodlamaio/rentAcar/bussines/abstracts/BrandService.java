@@ -5,6 +5,7 @@ import java.util.List;
 import com.kodlamaio.rentAcar.bussines.request.brands.CreateBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.DeleteBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.UpdateBrandRequest;
+import com.kodlamaio.rentAcar.bussines.response.brands.GetAllBrandsResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 //import com.kodlamaio.rentAcar.bussines.request.brands.GetBrandRequest;
@@ -17,7 +18,7 @@ public interface BrandService {
 	
 	Result update(UpdateBrandRequest updateBrandRequest);
 	
-	DataResult<List<Brand>>  getAll();
+	DataResult<List<GetAllBrandsResponse>>  getAll();
 	
 	DataResult<Brand> getById(int id);
 	

@@ -12,6 +12,7 @@ import com.kodlamaio.rentAcar.bussines.abstracts.ColorService;
 import com.kodlamaio.rentAcar.bussines.request.colors.CreateColorRequest;
 import com.kodlamaio.rentAcar.bussines.request.colors.DeleteColorRequest;
 import com.kodlamaio.rentAcar.bussines.request.colors.UpdateColorRequest;
+import com.kodlamaio.rentAcar.bussines.response.colors.GetAllColorsResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.entities.concretes.Color;
@@ -41,7 +42,7 @@ public class ColorController {
 	}
 	
 	@GetMapping("/getall")  // endpoint
-	public DataResult<List<Color>>  getAll() {
+	public DataResult<List<GetAllColorsResponse>>  getAll() {
 		return this.colorService.getAll();
 	}
 	

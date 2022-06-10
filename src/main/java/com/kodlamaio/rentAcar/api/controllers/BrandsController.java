@@ -12,6 +12,7 @@ import com.kodlamaio.rentAcar.bussines.abstracts.BrandService;
 import com.kodlamaio.rentAcar.bussines.request.brands.CreateBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.DeleteBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.UpdateBrandRequest;
+import com.kodlamaio.rentAcar.bussines.response.brands.GetAllBrandsResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.entities.concretes.Brand;
@@ -28,7 +29,7 @@ public class BrandsController {
 	}
 
 	@GetMapping("/getall")  // endpoint
-	public DataResult<List<Brand>> getAll() {
+	public DataResult<List<GetAllBrandsResponse>> getAll() {
 		 
 		return brandService.getAll();
 	}

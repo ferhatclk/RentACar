@@ -1,6 +1,7 @@
 package com.kodlamaio.rentAcar.bussines.concretes;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,8 @@ import com.kodlamaio.rentAcar.bussines.abstracts.BrandService;
 import com.kodlamaio.rentAcar.bussines.request.brands.CreateBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.DeleteBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.UpdateBrandRequest;
+import com.kodlamaio.rentAcar.bussines.response.brands.GetAllBrandsResponse;
+import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
@@ -19,17 +22,18 @@ import com.kodlamaio.rentAcar.entities.concretes.Brand;
 @Service
 public class BrandManager implements BrandService{
 	private BrandRepository brandRepository;
+	private ModelMapperService modelMapperService;
 	
 	@Autowired // parametreye bakıp bu interface nin somutunu getir
-	public BrandManager(BrandRepository brandRepository) {
+	public BrandManager(BrandRepository brandRepository, ModelMapperService modelMapperService) {
 		this.brandRepository = brandRepository;
+		this.modelMapperService = modelMapperService;
 	}
 
 
 	@Override
 	public Result add(CreateBrandRequest createBrandRequest) {
-		Brand brand = new Brand();
-		brand.setName(createBrandRequest.getName());
+		Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class);
 		this.brandRepository.save(brand);
 		return new SuccessResult("BRAND.ADDED");
 	}
@@ -43,17 +47,18 @@ public class BrandManager implements BrandService{
 	@Override
 	public Result update(UpdateBrandRequest updateBrandRequest) {
 		
-		Brand brandToUpdate = brandRepository.findById(updateBrandRequest.getId());
-		brandToUpdate.setName(updateBrandRequest.getName());
+		Brand brandToUpdate = this.modelMapperService.forRequest().map(updateBrandRequest, Brand.class);
 		brandRepository.save(brandToUpdate);
 		return new SuccessResult("BRAND.UPDATE");
 	}
 
 
 	@Override
-	public DataResult<List<Brand>> getAll() {
-		
-		return new SuccessDataResult<List<Brand>>(brandRepository.findAll(),"BRAND.LISTED");
+	public DataResult<List<GetAllBrandsResponse>> getAll() {
+		List<Brand> brands = this.brandRepository.findAll();
+		List<GetAllBrandsResponse> response = brands.stream().map(brand -> this.modelMapperService.forResponse()
+				.map(brand,GetAllBrandsResponse.class)).collect(Collectors.toList());
+		return new SuccessDataResult<List<GetAllBrandsResponse>>(response);
 	}
 
 

@@ -5,6 +5,7 @@ import java.util.List;
 import com.kodlamaio.rentAcar.bussines.request.colors.CreateColorRequest;
 import com.kodlamaio.rentAcar.bussines.request.colors.DeleteColorRequest;
 import com.kodlamaio.rentAcar.bussines.request.colors.UpdateColorRequest;
+import com.kodlamaio.rentAcar.bussines.response.colors.GetAllColorsResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.entities.concretes.Color;
@@ -16,7 +17,7 @@ public interface ColorService {
 	
 	Result update(UpdateColorRequest updateColorRequest);
 	
-	DataResult<List<Color>>  getAll();
+	DataResult<List<GetAllColorsResponse>>  getAll();
 	
 	DataResult<Color>  getById(int id);
 }
