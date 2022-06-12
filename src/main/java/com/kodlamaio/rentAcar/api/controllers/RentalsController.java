@@ -13,6 +13,7 @@ import com.kodlamaio.rentAcar.bussines.request.rentals.CreateRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.DeleteRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.UpdateRentalRequest;
 import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllRentalsResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetRentalResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 
@@ -31,7 +32,7 @@ public class RentalsController {
 	}
 	
 	@PostMapping("/delete")
-	public Result delete(DeleteRentalRequest deleteRentalRequest) {
+	public Result delete(@RequestBody DeleteRentalRequest deleteRentalRequest) {
 		return rentalService.delete(deleteRentalRequest);
 	}
 	
@@ -45,5 +46,9 @@ public class RentalsController {
 		return rentalService.getAll();
 	}
 	
+	@GetMapping("/getbyid")
+	public DataResult<GetRentalResponse> getById(int id){
+		return rentalService.getById(id);
+	}
 	
 }

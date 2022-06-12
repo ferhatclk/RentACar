@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodlamaio.rentAcar.bussines.abstracts.RentalService;
@@ -11,6 +12,7 @@ import com.kodlamaio.rentAcar.bussines.request.rentals.CreateRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.DeleteRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.UpdateRentalRequest;
 import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllRentalsResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetRentalResponse;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.ErrorResult;
@@ -24,6 +26,7 @@ import com.kodlamaio.rentAcar.entities.concretes.Rental;
 
 @Service
 public class RentalManager implements RentalService{
+	@Autowired
 	private RentalRepository rentalRepository;
 	private CarRepository carRepository;
 	private ModelMapperService modelMapperService;
@@ -39,21 +42,23 @@ public class RentalManager implements RentalService{
 		Car car = carRepository.findById(createRentalRequest.getCarId());
 		if(car.getState()==1) {
 			Rental rental = this.modelMapperService.forRequest().map(createRentalRequest, Rental.class);
-			
-			rental.setPickupDate(createRentalRequest.getPickupDate());
-			rental.setReturnDate(createRentalRequest.getReturnDate());
 			 
+			Date pickDate = createRentalRequest.getPickupDate();
+			Date returnDate = createRentalRequest.getReturnDate();
 			
-			long totalDays = dayDifference(createRentalRequest.getPickupDate(), createRentalRequest.getReturnDate());
+			long totalDays = dayDifference(pickDate, returnDate);
 			rental.setTotalDays(totalDays);
 			
 			
 			car.setId(createRentalRequest.getCarId());
-			
-			rental.setCar(car);
 			car.setState(3);
+			rental.setCar(car);
+			
 			double totalPrice = car.getDailyPrice();
-			rental.setTotalPrice(fullPrice(totalDays, totalPrice));
+			int pickCity = createRentalRequest.getPickUpCityId();
+			int returnCity = createRentalRequest.getReturnCityId();
+			
+			rental.setTotalPrice(fullPrice(totalDays, totalPrice, pickCity, returnCity));
 			rentalRepository.save(rental);
 
 			return new SuccessResult("RENTAL.ADDED");
@@ -65,41 +70,75 @@ public class RentalManager implements RentalService{
 
 	@Override
 	public Result delete(DeleteRentalRequest deleteRentalRequest) {
+		Car car = carRepository.findById(deleteRentalRequest.getCarId());
+		Rental rental = this.modelMapperService.forRequest().map(deleteRentalRequest, Rental.class);
+		rental.setCar(car);
+		car.setState(1);
+
+//		rentalRepository.save(rental);
 		rentalRepository.deleteById(deleteRentalRequest.getId());
 		return new SuccessResult("RENTAL.DELETED");
 	}
 
 	@Override
 	public Result update(UpdateRentalRequest updateRentalRequest) {
-		Rental rental = this.modelMapperService.forRequest().map(updateRentalRequest, Rental.class);
-//		rental.setPickupDate(updateRentalRequest.getPickupDate());
-//		rental.setReturnDate(updateRentalRequest.getReturnDate());
-		
-		long totalDays = dayDifference(updateRentalRequest.getPickupDate(), updateRentalRequest.getReturnDate());
-		rental.setTotalDays(totalDays);
-		
 		Car car = carRepository.findById(updateRentalRequest.getCarId());
-		car.setId(updateRentalRequest.getCarId());
+		if(car.getState()==1) {
+			Rental rental = this.modelMapperService.forRequest().map(updateRentalRequest, Rental.class);
+			
+			Date pickDate = updateRentalRequest.getPickupDate();
+			Date returnDate = updateRentalRequest.getReturnDate();
+			
+			long totalDays = dayDifference(pickDate, returnDate);
+			rental.setTotalDays(totalDays);
+			
+			//car.setId(updateRentalRequest.getCarId());
+			car.setState(3);
+			rental.setCar(car);
+			
+			
+			int pickCity = updateRentalRequest.getPickUpCityId();
+			int returnCity = updateRentalRequest.getReturnCityId();
 		
-		rental.setCar(car);
+			double totalPrice = car.getDailyPrice();
+			rental.setTotalPrice(fullPrice(totalDays, totalPrice,  pickCity, returnCity));
+			
+			
+			rentalRepository.save(rental);
+			
+			return new SuccessResult("RENTAL.UPDATED");
+		}else {
+			return new ErrorResult("DO.NOT.UPDATED.RENTAL!!!!");
+		}
 		
-		double totalPrice = car.getDailyPrice();
-		rental.setTotalPrice(fullPrice(totalDays, totalPrice));
-		
-		car.setState(3);
-		rentalRepository.save(rental);
-		
-		return new SuccessResult("RENTAL.UPDATED");
 	}
+//	private Result stateCar(CreateRentalRequest createRentalRequest) {
+//		Car car = carRepository.findById(createRentalRequest.getCarId());
+//		
+//		for (Rental item : rentalRepository.findAll()) {
+//			if(item.getCar()!=car) {
+//				car.setState(1);
+//			}
+//		}
+//		
+//		return new SuccessResult("UPDATE.RENTAL.STATE.UPDATE2");
+//	}
 	
 	private long dayDifference(Date datePickup, Date dateReturned) {
 		long dif = ((dateReturned.getTime() - datePickup.getTime())/(1000*60*60*24));
 		return dif;
 	}
 	
-	private double fullPrice(long day, double price) {
-		double fullprice = day * price;
-		return fullprice;
+	private double fullPrice(long day, double price, int pickId, int returnId) {
+		if(pickId == returnId) {
+			double fullprice = day * price;
+			return fullprice;
+		}else {
+			double fullprice = (day * price) + 750;
+			return fullprice;
+		}
+		
+		
 	}
 
 	@Override
@@ -108,6 +147,13 @@ public class RentalManager implements RentalService{
 		List<GetAllRentalsResponse> response = rentals.stream().map(rental -> this.modelMapperService.forResponse()
 				.map(rental, GetAllRentalsResponse.class)).collect(Collectors.toList());
 		return new SuccessDataResult<List<GetAllRentalsResponse>>(response);
+	}
+
+	@Override
+	public DataResult<GetRentalResponse> getById(int id) {
+		Rental rental = this.rentalRepository.findById(id);
+		GetRentalResponse response = this.modelMapperService.forResponse().map(rental, GetRentalResponse.class);
+		return new SuccessDataResult<GetRentalResponse>(response,"GET.BY.ID.RENTAL");
 	}
 	
 }

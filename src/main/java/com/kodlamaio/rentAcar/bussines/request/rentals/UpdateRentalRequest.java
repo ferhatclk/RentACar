@@ -12,5 +12,7 @@ import lombok.NoArgsConstructor;
 public class UpdateRentalRequest {
 	private Date pickupDate;
 	private Date returnDate;
+	private int pickUpCityId;
+	private int returnCityId;
 	private int carId;
 }

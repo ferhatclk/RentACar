@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.kodlamaio.rentAcar.entities.concretes.Rental;
 
 public interface RentalRepository extends JpaRepository<Rental, Integer>{
-	Rental getById(int id);
+	Rental findById(int id);
 }

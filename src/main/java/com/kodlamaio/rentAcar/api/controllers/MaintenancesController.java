@@ -16,7 +16,6 @@ import com.kodlamaio.rentAcar.bussines.response.maintenances.GetAllMaintenancesR
 import com.kodlamaio.rentAcar.bussines.response.maintenances.GetMaintenanceResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
-import com.kodlamaio.rentAcar.entities.concretes.Maintenance;
 
 @RestController
 @RequestMapping("/api/maintenances")
@@ -53,8 +52,8 @@ public class MaintenancesController {
 	}
 	
 	@GetMapping("getById")
-	public DataResult<Maintenance> getById(GetMaintenanceResponse getMaintenanceResponse){
-		return maintenanceService.getById(getMaintenanceResponse);
+	public DataResult<GetMaintenanceResponse> getById(int id){
+		return maintenanceService.getById(id);
 	}
 	
 	

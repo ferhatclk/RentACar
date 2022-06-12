@@ -11,6 +11,8 @@ import com.kodlamaio.rentAcar.bussines.request.cars.CreateCarRequest;
 import com.kodlamaio.rentAcar.bussines.request.cars.DeleteCarRequest;
 import com.kodlamaio.rentAcar.bussines.request.cars.UpdateCarRequest;
 import com.kodlamaio.rentAcar.bussines.response.cars.GetAllCarsResponse;
+import com.kodlamaio.rentAcar.bussines.response.cars.GetByIdCarResponse;
+import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.ErrorResult;
@@ -22,11 +24,11 @@ import com.kodlamaio.rentAcar.entities.concretes.Car;
 
 @Service
 public class CarManager implements CarService{
-	
+	@Autowired
 	private CarRepository carRepository;
 	private ModelMapperService modelMapperService;
 	
-	@Autowired
+	
 	public CarManager(CarRepository carRepository,ModelMapperService modelMapperService) {
 		this.carRepository = carRepository;
 		this.modelMapperService = modelMapperService;
@@ -34,14 +36,12 @@ public class CarManager implements CarService{
 	
 	@Override
 	public Result add(CreateCarRequest createCarRequest) {
-		if(ifCheckExist(createCarRequest.getBrandId())<5) {
-			Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
-			car.setState(1);
-			this.carRepository.save(car);
-			return new SuccessResult("CAR.ADDED");
-		}else {
-			return new ErrorResult("COULD.NOT.ADD.CAR!!!");
-		}
+		ifCheckExistCount(createCarRequest.getBrandId());
+		Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
+		car.setState(1);
+		this.carRepository.save(car);
+		return new SuccessResult("CAR.ADDED");
+		
 		
 	}
 
@@ -74,19 +74,17 @@ public class CarManager implements CarService{
 	}
 
 	@Override
-	public DataResult<Car> getById(int id) {
-		
-		return new SuccessDataResult<Car>(this.carRepository.findById(id));
+	public DataResult<GetByIdCarResponse> getById(int id) {
+		Car car = this.carRepository.findById(id);
+		GetByIdCarResponse response = this.modelMapperService.forResponse().map(car, GetByIdCarResponse.class);
+		return new SuccessDataResult<GetByIdCarResponse>(response,"CAR.GET.ID");
 	}
 	
-	private int ifCheckExist(int id) {
-		int count = 0;
-		for(Car item: carRepository.findAll()) {
-			if(item.getBrand().getId()==id) {
-				count++;
-			}
+	private void ifCheckExistCount(int id) {
+		List<Car> cars = carRepository.getByBrandId(id);
+		if(cars.size() > 4) {
+			throw new BusinessException("CAR.EXIST");
 		}
-		return count;
 	}
 
 }

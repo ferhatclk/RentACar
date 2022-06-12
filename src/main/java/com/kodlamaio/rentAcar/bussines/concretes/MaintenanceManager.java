@@ -3,6 +3,7 @@ package com.kodlamaio.rentAcar.bussines.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodlamaio.rentAcar.bussines.abstracts.MaintenanceService;
@@ -23,6 +24,7 @@ import com.kodlamaio.rentAcar.entities.concretes.Maintenance;
 
 @Service
 public class MaintenanceManager implements MaintenanceService{
+	@Autowired
 	private MaintenanceRepository maintenanceRepository;
 	private ModelMapperService modelMapperService;
 	private CarRepository carRepository;
@@ -58,22 +60,16 @@ public class MaintenanceManager implements MaintenanceService{
 	public Result update(UpdateMaintenenceRequest updateMaintenenceRequest) {
 		
 		Maintenance maintenance = this.modelMapperService.forRequest().map(updateMaintenenceRequest, Maintenance.class);
-		//maintenanceRepository.findById(updateMaintenenceRequest.getId())
-//		maintenance.setDateSent(updateMaintenenceRequest.getDateSent());
-//		maintenance.setDateReturned(updateMaintenenceRequest.getDateReturned());
-//		
-//		Car car = carRepository.findById(updateMaintenenceRequest.getCarId());
-//		car.setId(updateMaintenenceRequest.getCarId());
-//		maintenance.setCar(car);
-		
+
 		maintenanceRepository.save(maintenance);
+		
 		return new SuccessResult("MAINTENANCE.UPDATE");
 	}
 
 	@Override
 	public Result updateState(UpdateMaintenenceRequest updateMaintenenceRequest) {
-		Car car = this.modelMapperService.forRequest().map(updateMaintenenceRequest, Car.class);
-		//carRepository.findById(updateMaintenenceRequest.getCarId())
+		Car car = carRepository.findById(updateMaintenenceRequest.getCarId());
+		
 		if(car.getState()==1) {
 			car.setState(2);
 		}else {
@@ -84,11 +80,11 @@ public class MaintenanceManager implements MaintenanceService{
 	}
 
 	@Override
-	public DataResult<Maintenance> getById(GetMaintenanceResponse getMaintenanceResponse) {
+	public DataResult<GetMaintenanceResponse> getById(int id) {
 		
-		Maintenance maintenance = maintenanceRepository.findById(getMaintenanceResponse.getId());
-		
-		return new SuccessDataResult<Maintenance>(maintenance,"GET_BY_ID");
+		Maintenance maintenance = maintenanceRepository.findById(id);
+		GetMaintenanceResponse response = this.modelMapperService.forResponse().map(maintenance, GetMaintenanceResponse.class);
+		return new SuccessDataResult<GetMaintenanceResponse>(response,"GET_BY_ID");
 	}
 
 	@Override

@@ -42,6 +42,14 @@ public class Rental {
 	private double totalPrice;
 	
 	@ManyToOne
+	@JoinColumn(name = "pickUpCityId")
+	private City pickCity;
+	
+	@ManyToOne
+	@JoinColumn(name = "returnCityId")
+	private City returnCity;
+	
+	@ManyToOne
 	@JoinColumn(name = "car_id")
 	private Car car;
 	

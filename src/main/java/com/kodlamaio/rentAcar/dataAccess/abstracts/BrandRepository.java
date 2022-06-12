@@ -6,4 +6,5 @@ import com.kodlamaio.rentAcar.entities.concretes.Brand;
 
 public interface BrandRepository extends JpaRepository<Brand, Integer>{
 	Brand findById(int id);
+	Brand findByName(String name);
 }
