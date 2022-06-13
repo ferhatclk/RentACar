@@ -26,6 +26,7 @@ import com.kodlamaio.rentAcar.entities.concretes.Car;
 public class CarManager implements CarService{
 	@Autowired
 	private CarRepository carRepository;
+	@Autowired
 	private ModelMapperService modelMapperService;
 	
 	

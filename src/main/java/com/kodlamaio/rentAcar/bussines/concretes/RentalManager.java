@@ -28,7 +28,9 @@ import com.kodlamaio.rentAcar.entities.concretes.Rental;
 public class RentalManager implements RentalService{
 	@Autowired
 	private RentalRepository rentalRepository;
+	@Autowired
 	private CarRepository carRepository;
+	@Autowired
 	private ModelMapperService modelMapperService;
 	
 	public RentalManager(RentalRepository rentalRepository,CarRepository carRepository, ModelMapperService modelMapperService) {
@@ -49,7 +51,6 @@ public class RentalManager implements RentalService{
 		rental.setTotalDays(totalDays);
 		
 		Car car = carRepository.findById(createRentalRequest.getCarId());
-//		car.setId(createRentalRequest.getCarId());
 		car.setState(3);
 		rental.setCar(car);
 		
@@ -135,8 +136,8 @@ public class RentalManager implements RentalService{
 		car.setState(1);
 	}
 	
-	private long dayDifference(Date datePickup, Date dateReturned) {
-		long dif = ((dateReturned.getTime() - datePickup.getTime())/(1000*60*60*24));
+	private int dayDifference(Date datePickup, Date dateReturned) {
+		int dif = (int) ((dateReturned.getTime() - datePickup.getTime())/(1000*60*60*24));
 		return dif;
 	}
 	

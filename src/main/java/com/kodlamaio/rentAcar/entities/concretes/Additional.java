@@ -24,6 +24,12 @@ public class Additional {
 	@Column(name = "id")
 	private int id;
 	
+	@Column(name = "total_price")
+	private double totalPrice;
+	
+	@Column(name = "days")
+	private long days;
+	
 	@ManyToOne
 	@JoinColumn(name = "rental_id")
 	private Rental rental;

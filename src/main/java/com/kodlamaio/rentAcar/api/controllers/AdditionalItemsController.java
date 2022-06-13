@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,27 +29,29 @@ public class AdditionalItemsController {
 	}
 	
 	@PostMapping("/add")
-	public Result add(CreateAdditionalItemRequest createAdditionalItemRequest) {
-		return additionalItemService.add(createAdditionalItemRequest);
+	public Result add(@RequestBody CreateAdditionalItemRequest createAdditionalItemRequest) {
+		return this.additionalItemService.add(createAdditionalItemRequest);
 	}
 	
 	@PostMapping("/delete")
 	public Result delete(DeleteAdditionalItemRequest deleteAdditionalItemRequest) {
-		return additionalItemService.delete(deleteAdditionalItemRequest);
+		return this.additionalItemService.delete(deleteAdditionalItemRequest);
 	}
 	
 	@PostMapping("/update")
-	public Result update(UpdateAdditionalItemRequest updateAdditionalItemRequest) {
-		return additionalItemService.update(updateAdditionalItemRequest);
+	public Result update(@RequestBody UpdateAdditionalItemRequest updateAdditionalItemRequest) {
+		return this.additionalItemService.update(updateAdditionalItemRequest);
 	}
 	
 	@GetMapping("/getall")
 	public DataResult<List<GetAllAdditionalItemsResponse>> getAll(){
-		return additionalItemService.getAll();
+		
+		return this.additionalItemService.getAll();
 	}
 	
 	@GetMapping("/getbyid")
 	public DataResult<GetByIdAdditionalItemResponse> getById(int id){
-		return additionalItemService.getById(id);
+		
+		return this.additionalItemService.getById(id);
 	}
 }

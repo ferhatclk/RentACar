@@ -26,7 +26,9 @@ import com.kodlamaio.rentAcar.entities.concretes.Maintenance;
 public class MaintenanceManager implements MaintenanceService{
 	@Autowired
 	private MaintenanceRepository maintenanceRepository;
+	@Autowired
 	private ModelMapperService modelMapperService;
+	@Autowired
 	private CarRepository carRepository;
 
 	public MaintenanceManager(MaintenanceRepository maintenanceRepository, CarRepository carRepository, ModelMapperService modelMapperService) {

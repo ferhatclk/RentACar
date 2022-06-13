@@ -24,6 +24,7 @@ import com.kodlamaio.rentAcar.entities.concretes.AdditionalItem;
 public class AdditionalItemManager implements AdditionalItemService{
 	@Autowired
 	private AdditionalItemRepository additionalItemRepository;
+	@Autowired
 	private ModelMapperService modelMapperService;
 
 	public AdditionalItemManager(AdditionalItemRepository additionalItemRepository, ModelMapperService modelMapperService) {

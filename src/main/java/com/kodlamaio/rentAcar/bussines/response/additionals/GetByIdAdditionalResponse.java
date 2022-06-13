@@ -1,8 +1,5 @@
 package com.kodlamaio.rentAcar.bussines.response.additionals;
 
-import com.kodlamaio.rentAcar.entities.concretes.AdditionalItem;
-import com.kodlamaio.rentAcar.entities.concretes.Rental;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GetByIdAdditionalResponse {
 	private int id;
-	private Rental rental;
-	private AdditionalItem additionalItem;
+	private int rentalId;
+	private int additionalItemId;
+	private double totalPrice;
+	private long days;
 }

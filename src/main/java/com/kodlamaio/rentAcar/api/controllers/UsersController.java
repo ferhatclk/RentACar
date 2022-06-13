@@ -2,6 +2,7 @@ package com.kodlamaio.rentAcar.api.controllers;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +17,12 @@ import com.kodlamaio.rentAcar.core.utilities.result.Result;
 @RestController
 @RequestMapping("/api/users")
 public class UsersController {
+	@Autowired
 	private UserService userService;
 
-	public UsersController(UserService userService) {
-		this.userService = userService;
-	}
+//	public UsersController(UserService userService) {
+//		this.userService = userService;
+//	}
 	
 	@PostMapping("/add")
 	public Result add(@RequestBody @Valid CreateUserRequest createUserRequest) {

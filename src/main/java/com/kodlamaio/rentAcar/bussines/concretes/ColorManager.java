@@ -24,6 +24,7 @@ import com.kodlamaio.rentAcar.entities.concretes.Color;
 public class ColorManager implements ColorService{
 	@Autowired
 	private ColorRepository colorRepository;
+	@Autowired
 	private ModelMapperService modelMapperService;
 	
 	

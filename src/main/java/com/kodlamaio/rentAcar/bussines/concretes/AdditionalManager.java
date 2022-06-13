@@ -17,28 +17,35 @@ import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
+import com.kodlamaio.rentAcar.dataAccess.abstracts.AdditionalItemRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.AdditionalRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.RentalRepository;
 import com.kodlamaio.rentAcar.entities.concretes.Additional;
+import com.kodlamaio.rentAcar.entities.concretes.AdditionalItem;
+import com.kodlamaio.rentAcar.entities.concretes.Rental;
 
 @Service
 public class AdditionalManager implements AdditionalService{
 	@Autowired
 	private ModelMapperService modelMapperService;
+	@Autowired
 	private AdditionalRepository additionalRepository;
+	@Autowired
 	private RentalRepository rentalRepository;
-
-	public AdditionalManager(ModelMapperService modelMapperService, AdditionalRepository additionalRepository, RentalRepository rentalRepository) {
-		this.modelMapperService = modelMapperService;
-		this.additionalRepository = additionalRepository;
-		this.rentalRepository = rentalRepository;
-	}
+	@Autowired
+	private AdditionalItemRepository additionalItemRepository;
 
 	@Override
 	public Result add(CreateAdditionalRequest createAdditionalRequest) {
 		Additional additional = modelMapperService.forRequest().map(createAdditionalRequest, Additional.class);
-//		Rental rental = rentalRepository.findById(createAdditionalRequest.getRentalId());
-//		rental.set;
+		Rental rental = rentalRepository.findById(createAdditionalRequest.getRentalId());
+		additional.setDays(rental.getTotalDays());
+
+		AdditionalItem additionalItem = additionalItemRepository.findById(createAdditionalRequest.getAdditionalItemId());
+		
+		double price = additionalItem.getPrice();
+		additional.setTotalPrice(additional.getDays() * price);
+			
 		additionalRepository.save(additional);
 		return new SuccessResult("ADDITIONAL.ADDED");
 	}
@@ -51,7 +58,14 @@ public class AdditionalManager implements AdditionalService{
 
 	@Override
 	public Result update(UpdateAdditionalRequest updateAdditionalRequest) {
+		AdditionalItem additionalItem = additionalItemRepository.findById(updateAdditionalRequest.getAdditionalItemId());
 		Additional additional = modelMapperService.forRequest().map(updateAdditionalRequest, Additional.class);
+		Rental rental = rentalRepository.findById(updateAdditionalRequest.getRentalId());
+		
+		additional.setDays(rental.getTotalDays());
+		
+		additional.setTotalPrice(additional.getDays() * additionalItem.getPrice());		
+		
 		additionalRepository.save(additional);
 		return new SuccessResult("ADDITIONAL.UPDATED");
 	}
@@ -69,6 +83,7 @@ public class AdditionalManager implements AdditionalService{
 	public DataResult<GetByIdAdditionalResponse> getById(int id) {
 		Additional additional = additionalRepository.findById(id);
 		GetByIdAdditionalResponse response = modelMapperService.forResponse().map(additional, GetByIdAdditionalResponse.class);
+		
 		return new SuccessDataResult<GetByIdAdditionalResponse>(response);
 	}
 
