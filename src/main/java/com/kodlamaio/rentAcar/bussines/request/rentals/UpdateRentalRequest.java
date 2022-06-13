@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateRentalRequest {
+	private int id;
 	private Date pickupDate;
 	private Date returnDate;
 	private int pickUpCityId;

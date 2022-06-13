@@ -32,7 +32,7 @@ public class RentalsController {
 	}
 	
 	@PostMapping("/delete")
-	public Result delete(@RequestBody DeleteRentalRequest deleteRentalRequest) {
+	public Result delete(DeleteRentalRequest deleteRentalRequest) {
 		return rentalService.delete(deleteRentalRequest);
 	}
 	

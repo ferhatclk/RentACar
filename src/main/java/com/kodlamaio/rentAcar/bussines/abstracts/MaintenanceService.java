@@ -14,7 +14,7 @@ public interface MaintenanceService {
 	Result add(CreateMaintenanceRequest createMaintenanceRequest);
 	Result delete(DeleteMaintenanceRequest deleteMaintenanceRequest);
 	Result update(UpdateMaintenenceRequest updateMaintenenceRequest);
-	Result updateState(UpdateMaintenenceRequest updateMaintenenceRequest);
+	//Result updateState(UpdateMaintenenceRequest updateMaintenenceRequest);
 	DataResult<GetMaintenanceResponse> getById(int id);
 	DataResult<List<GetAllMaintenancesResponse>> getAll();
 }

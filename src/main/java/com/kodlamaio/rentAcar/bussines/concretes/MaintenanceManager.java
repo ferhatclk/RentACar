@@ -38,11 +38,9 @@ public class MaintenanceManager implements MaintenanceService{
 	@Override
 	public Result add(CreateMaintenanceRequest createMaintenanceRequest) {
 		Maintenance maintenance = this.modelMapperService.forRequest().map(createMaintenanceRequest, Maintenance.class);
-//		maintenance.setDateSent(createMaintenanceRequest.getDateSent());
-//		maintenance.setDateReturned(createMaintenanceRequest.getDateReturned());
 		
 		Car car = carRepository.findById(createMaintenanceRequest.getCarId());
-//		car.setId(createMaintenanceRequest.getCarId());
+
 		car.setState(2);
 		maintenance.setCar(car);
 		
@@ -52,31 +50,27 @@ public class MaintenanceManager implements MaintenanceService{
 	
 	@Override
 	public Result delete(DeleteMaintenanceRequest deleteMaintenanceRequest) {
+		Maintenance maintenance = maintenanceRepository.findById(deleteMaintenanceRequest.getId());
+		Car car = maintenance.getCar();
+		car.setState(1);
+		carRepository.save(car);
 		maintenanceRepository.deleteById(deleteMaintenanceRequest.getId());
 		return new SuccessResult("MAINTENANCE.DELETED");
 	}
 
 	@Override
 	public Result update(UpdateMaintenenceRequest updateMaintenenceRequest) {
-		
+		stateCar(updateMaintenenceRequest.getId());
 		Maintenance maintenance = this.modelMapperService.forRequest().map(updateMaintenenceRequest, Maintenance.class);
+		
+		Car car = this.carRepository.findById(updateMaintenenceRequest.getCarId());
+		car.setState(2);
+//		carRepository.save(car);
+		maintenance.setCar(car);
 
 		maintenanceRepository.save(maintenance);
 		
 		return new SuccessResult("MAINTENANCE.UPDATE");
-	}
-
-	@Override
-	public Result updateState(UpdateMaintenenceRequest updateMaintenenceRequest) {
-		Car car = carRepository.findById(updateMaintenenceRequest.getCarId());
-		
-		if(car.getState()==1) {
-			car.setState(2);
-		}else {
-			car.setState(1);
-		}
-		carRepository.save(car);
-		return new SuccessResult("STATE.UPDATE");
 	}
 
 	@Override
@@ -94,7 +88,12 @@ public class MaintenanceManager implements MaintenanceService{
 				.map(maintenance, GetAllMaintenancesResponse.class)).collect(Collectors.toList());
 		return new SuccessDataResult<List<GetAllMaintenancesResponse>>(response,"MAINTENACES.LISTED");
 	}
-
+	
+	private void stateCar(int id) {
+		Maintenance maintenance = maintenanceRepository.findById(id);
+		Car car = maintenance.getCar();
+		car.setState(1);
+	}
 
 
 }

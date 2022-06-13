@@ -41,10 +41,10 @@ public class MaintenancesController {
 		return maintenanceService.update(updateMaintenenceRequest);
 	}
 	
-	@PostMapping("/updateState")
-	public Result updateState(@RequestBody UpdateMaintenenceRequest udateMaintenenceRequest) {
-		return maintenanceService.updateState(udateMaintenenceRequest);
-	}
+//	@PostMapping("/updateState")
+//	public Result updateState(@RequestBody UpdateMaintenenceRequest udateMaintenenceRequest) {
+//		return maintenanceService.updateState(udateMaintenenceRequest);
+//	}
 	
 	@GetMapping("/getall")
 	public DataResult<List<GetAllMaintenancesResponse>> getAll(){

@@ -13,9 +13,9 @@ import com.kodlamaio.rentAcar.bussines.request.rentals.DeleteRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.UpdateRentalRequest;
 import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllRentalsResponse;
 import com.kodlamaio.rentAcar.bussines.response.rentals.GetRentalResponse;
+import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
-import com.kodlamaio.rentAcar.core.utilities.result.ErrorResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
@@ -39,105 +39,71 @@ public class RentalManager implements RentalService{
 
 	@Override
 	public Result add(CreateRentalRequest createRentalRequest) {
+		ifCheckState(createRentalRequest.getCarId());
+		Rental rental = this.modelMapperService.forRequest().map(createRentalRequest, Rental.class);
+		 
+		Date pickDate = createRentalRequest.getPickupDate();
+		Date returnDate = createRentalRequest.getReturnDate();
+		
+		long totalDays = dayDifference(pickDate, returnDate);
+		rental.setTotalDays(totalDays);
+		
 		Car car = carRepository.findById(createRentalRequest.getCarId());
-		if(car.getState()==1) {
-			Rental rental = this.modelMapperService.forRequest().map(createRentalRequest, Rental.class);
-			 
-			Date pickDate = createRentalRequest.getPickupDate();
-			Date returnDate = createRentalRequest.getReturnDate();
-			
-			long totalDays = dayDifference(pickDate, returnDate);
-			rental.setTotalDays(totalDays);
-			
-			
-			car.setId(createRentalRequest.getCarId());
-			car.setState(3);
-			rental.setCar(car);
-			
-			double totalPrice = car.getDailyPrice();
-			int pickCity = createRentalRequest.getPickUpCityId();
-			int returnCity = createRentalRequest.getReturnCityId();
-			
-			rental.setTotalPrice(fullPrice(totalDays, totalPrice, pickCity, returnCity));
-			rentalRepository.save(rental);
+//		car.setId(createRentalRequest.getCarId());
+		car.setState(3);
+		rental.setCar(car);
+		
+		double dailyPrice = car.getDailyPrice();
+		int pickCity = createRentalRequest.getPickUpCityId();
+		int returnCity = createRentalRequest.getReturnCityId();
+		
+		rental.setTotalPrice(fullPrice(totalDays, dailyPrice, pickCity, returnCity));
+		rentalRepository.save(rental);
 
-			return new SuccessResult("RENTAL.ADDED");
-		}else {
-			return new ErrorResult("DO.NOT.ADD.RENTAL!!!!");
-		}
+		return new SuccessResult("RENTAL.ADDED");
 		
 	}
 
 	@Override
 	public Result delete(DeleteRentalRequest deleteRentalRequest) {
-		Car car = carRepository.findById(deleteRentalRequest.getCarId());
-		Rental rental = this.modelMapperService.forRequest().map(deleteRentalRequest, Rental.class);
-		rental.setCar(car);
+		
+		Rental rental = rentalRepository.findById(deleteRentalRequest.getId());
+		
+		Car car = rental.getCar();
 		car.setState(1);
+		carRepository.save(car);
 
-//		rentalRepository.save(rental);
-		rentalRepository.deleteById(deleteRentalRequest.getId());
+		rentalRepository.delete(rental);
 		return new SuccessResult("RENTAL.DELETED");
 	}
 
 	@Override
 	public Result update(UpdateRentalRequest updateRentalRequest) {
+		
+		ifCheckState(updateRentalRequest.getCarId());
+		stateCar(updateRentalRequest.getId());
+		
+		Rental rental = this.modelMapperService.forRequest().map(updateRentalRequest, Rental.class);
+		
 		Car car = carRepository.findById(updateRentalRequest.getCarId());
-		if(car.getState()==1) {
-			Rental rental = this.modelMapperService.forRequest().map(updateRentalRequest, Rental.class);
-			
-			Date pickDate = updateRentalRequest.getPickupDate();
-			Date returnDate = updateRentalRequest.getReturnDate();
-			
-			long totalDays = dayDifference(pickDate, returnDate);
-			rental.setTotalDays(totalDays);
-			
-			//car.setId(updateRentalRequest.getCarId());
-			car.setState(3);
-			rental.setCar(car);
-			
-			
-			int pickCity = updateRentalRequest.getPickUpCityId();
-			int returnCity = updateRentalRequest.getReturnCityId();
+		car.setState(3);
+		rental.setCar(car);
 		
-			double totalPrice = car.getDailyPrice();
-			rental.setTotalPrice(fullPrice(totalDays, totalPrice,  pickCity, returnCity));
-			
-			
-			rentalRepository.save(rental);
-			
-			return new SuccessResult("RENTAL.UPDATED");
-		}else {
-			return new ErrorResult("DO.NOT.UPDATED.RENTAL!!!!");
-		}
+		Date pickDate = updateRentalRequest.getPickupDate();
+		Date returnDate = updateRentalRequest.getReturnDate();
 		
-	}
-//	private Result stateCar(CreateRentalRequest createRentalRequest) {
-//		Car car = carRepository.findById(createRentalRequest.getCarId());
-//		
-//		for (Rental item : rentalRepository.findAll()) {
-//			if(item.getCar()!=car) {
-//				car.setState(1);
-//			}
-//		}
-//		
-//		return new SuccessResult("UPDATE.RENTAL.STATE.UPDATE2");
-//	}
+		long totalDays = dayDifference(pickDate, returnDate);
+		rental.setTotalDays(totalDays);
+		
+		int pickCity = updateRentalRequest.getPickUpCityId();
+		int returnCity = updateRentalRequest.getReturnCityId();
 	
-	private long dayDifference(Date datePickup, Date dateReturned) {
-		long dif = ((dateReturned.getTime() - datePickup.getTime())/(1000*60*60*24));
-		return dif;
-	}
-	
-	private double fullPrice(long day, double price, int pickId, int returnId) {
-		if(pickId == returnId) {
-			double fullprice = day * price;
-			return fullprice;
-		}else {
-			double fullprice = (day * price) + 750;
-			return fullprice;
-		}
+		double dailyPrice = car.getDailyPrice();
+		rental.setTotalPrice(fullPrice(totalDays, dailyPrice,  pickCity, returnCity));
 		
+		rentalRepository.save(rental);
+		
+		return new SuccessResult("RENTAL.UPDATED");
 		
 	}
 
@@ -154,6 +120,34 @@ public class RentalManager implements RentalService{
 		Rental rental = this.rentalRepository.findById(id);
 		GetRentalResponse response = this.modelMapperService.forResponse().map(rental, GetRentalResponse.class);
 		return new SuccessDataResult<GetRentalResponse>(response,"GET.BY.ID.RENTAL");
+	}
+	
+	private void ifCheckState(int id) {
+		Car car = carRepository.findById(id);
+		if(car.getState()==2) {
+			throw new BusinessException("STATE.DOES.NOT.FIT!!!!");
+		}
+	}
+	
+	private void stateCar(int id) {
+		Rental rental = rentalRepository.findById(id);
+		Car car = rental.getCar();
+		car.setState(1);
+	}
+	
+	private long dayDifference(Date datePickup, Date dateReturned) {
+		long dif = ((dateReturned.getTime() - datePickup.getTime())/(1000*60*60*24));
+		return dif;
+	}
+	
+	private double fullPrice(long day, double dailyPrice, int pickId, int returnId) {
+		if(pickId == returnId) {
+			double fullprice = day * dailyPrice;
+			return fullprice;
+		}else {
+			double fullprice = (day * dailyPrice) + 750;
+			return fullprice;
+		}
 	}
 	
 }
