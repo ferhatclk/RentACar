@@ -6,4 +6,5 @@ import com.kodlamaio.rentAcar.entities.concretes.User;
 
 public interface UserRespository extends JpaRepository<User, Integer>{
 //	User findNationaltyId(String tcNo);
+	User findById(int id);
 }
