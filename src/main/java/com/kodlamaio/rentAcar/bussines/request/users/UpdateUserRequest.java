@@ -15,8 +15,6 @@ public class UpdateUserRequest {
 	private String firstName;
 	@Size(min = 2)
 	private String lastName;
-	@Size(min = 11,max = 11)
-	private String nationalIdentity;
 	private int birthDay;
 	private String email;
 	private String password;

@@ -12,6 +12,7 @@ import com.kodlamaio.rentAcar.bussines.request.maintenances.DeleteMaintenanceReq
 import com.kodlamaio.rentAcar.bussines.request.maintenances.UpdateMaintenenceRequest;
 import com.kodlamaio.rentAcar.bussines.response.maintenances.GetAllMaintenancesResponse;
 import com.kodlamaio.rentAcar.bussines.response.maintenances.GetMaintenanceResponse;
+import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
@@ -39,6 +40,8 @@ public class MaintenanceManager implements MaintenanceService{
 
 	@Override
 	public Result add(CreateMaintenanceRequest createMaintenanceRequest) {
+		
+		ifCheckState(createMaintenanceRequest.getCarId());
 		Maintenance maintenance = this.modelMapperService.forRequest().map(createMaintenanceRequest, Maintenance.class);
 		
 		Car car = carRepository.findById(createMaintenanceRequest.getCarId());
@@ -62,6 +65,7 @@ public class MaintenanceManager implements MaintenanceService{
 
 	@Override
 	public Result update(UpdateMaintenenceRequest updateMaintenenceRequest) {
+		ifCheckState(updateMaintenenceRequest.getCarId());
 		stateCar(updateMaintenenceRequest.getId());
 		Maintenance maintenance = this.modelMapperService.forRequest().map(updateMaintenenceRequest, Maintenance.class);
 		
@@ -89,6 +93,13 @@ public class MaintenanceManager implements MaintenanceService{
 		List<GetAllMaintenancesResponse> response = maintenances.stream().map(maintenance -> this.modelMapperService.forResponse()
 				.map(maintenance, GetAllMaintenancesResponse.class)).collect(Collectors.toList());
 		return new SuccessDataResult<List<GetAllMaintenancesResponse>>(response,"MAINTENACES.LISTED");
+	}
+	
+	private void ifCheckState(int id) {
+		Car car = carRepository.findById(id);
+		if(car.getState()==3) {
+			throw new BusinessException("STATE.DOES.NOT.FIT!!!!");
+		}
 	}
 	
 	private void stateCar(int id) {

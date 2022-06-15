@@ -37,7 +37,7 @@ public class UserManager implements UserService{
 
 	@Override
 	public Result add(CreateUserRequest createUserRequest) throws NumberFormatException, RemoteException {
-//		notRepeatNationalIdentity(createUserRequest.getNationalIdentity());
+		notRepeatNationalIdentity(createUserRequest.getNationalIdentity());
 
 		User user = this.modelMapperService.forRequest().map(createUserRequest, User.class);
 		checkIfPerson(user);
@@ -94,19 +94,11 @@ public class UserManager implements UserService{
 	}
 	
 	
-//	private void notRepeatNationalIdentity(String nationalIdentity) {
-////		User user = userRespository.findNationaltyId(nationalIdentity);
-////		if(user != null) {
-////			throw new BusinessException("USER.NOT.EXİST");
-////		}
-//		
-//		List<User> users = userRespository.findAll();
-//		for (User item : users) {
-//			if(item.getNationalIdentity() == nationalIdentity) {
-//				//throw new BusinessException("USER.NOT.EXİST");
-//			}
-//		}
-//		
-//	}
+	private void notRepeatNationalIdentity(String nationalIdentity) {
+		User user = userRespository.findByNationalIdentity(nationalIdentity);
+		if(user != null) {
+			throw new BusinessException("USER.EXİST.!!!");
+		}
+	}
 
 }

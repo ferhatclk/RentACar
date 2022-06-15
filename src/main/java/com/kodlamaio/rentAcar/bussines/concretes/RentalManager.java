@@ -49,6 +49,7 @@ public class RentalManager implements RentalService{
 	@Override
 	public Result add(CreateRentalRequest createRentalRequest) {
 		ifCheckState(createRentalRequest.getCarId());
+		checkDate(createRentalRequest.getPickupDate(),createRentalRequest.getReturnDate());
 		Rental rental = this.modelMapperService.forRequest().map(createRentalRequest, Rental.class);
 		 
 		Date pickDate = createRentalRequest.getPickupDate();
@@ -93,7 +94,7 @@ public class RentalManager implements RentalService{
 		
 		ifCheckState(updateRentalRequest.getCarId());
 		stateCar(updateRentalRequest.getId());
-		
+		checkDate(updateRentalRequest.getPickupDate(),updateRentalRequest.getReturnDate());
 		Rental rental = this.modelMapperService.forRequest().map(updateRentalRequest, Rental.class);
 		
 		Car car = carRepository.findById(updateRentalRequest.getCarId());
@@ -137,6 +138,12 @@ public class RentalManager implements RentalService{
 		Car car = carRepository.findById(id);
 		if(car.getState()==2) {
 			throw new BusinessException("STATE.DOES.NOT.FIT!!!!");
+		}
+	}
+	
+	private void checkDate(Date dateReturned, Date datePickup) {
+		if(!datePickup.after(dateReturned)) {
+			throw new BusinessException("RETURN.DATE.IS.INCORRECT!!!!");
 		}
 	}
 	
