@@ -42,7 +42,8 @@ public class Car {
 	@Column(name = "km")
 	private int km;
 	
-//	@Column(name = "")
+	@Column(name = "min_findex")
+	private int findexScore;
 	
 	@Column(name = "state")
 	private int state;

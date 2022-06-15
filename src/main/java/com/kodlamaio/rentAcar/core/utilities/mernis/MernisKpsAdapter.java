@@ -13,7 +13,7 @@ public class MernisKpsAdapter implements PersonCheckService{
 	@Override
 	public boolean checkPerson(User user) throws NumberFormatException, RemoteException {
 		KPSPublicSoapProxy kpsPublicSoapProxy = new KPSPublicSoapProxy();
-		boolean result = kpsPublicSoapProxy.TCKimlikNoDogrula(Long.parseLong(user.getNationalIdentity()), user.getFirstName(), user.getLastName(), user.getBirthDay());
+		boolean result = kpsPublicSoapProxy.TCKimlikNoDogrula(Long.parseLong(user.getNationalIdentity()), user.getFirstName().toUpperCase(), user.getLastName().toUpperCase(), user.getBirthDay());
 		return result;
 	}
 

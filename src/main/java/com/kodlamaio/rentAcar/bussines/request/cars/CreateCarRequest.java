@@ -19,6 +19,7 @@ public class CreateCarRequest {
 	@Min(1000)
 	@NotNull
 	private double dailyPrice;
+	private int findexScore;
 	private String plate;
 	private int km;
 	private int brandId;

@@ -13,6 +13,7 @@ import com.kodlamaio.rentAcar.bussines.request.rentals.DeleteRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.UpdateRentalRequest;
 import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllRentalsResponse;
 import com.kodlamaio.rentAcar.bussines.response.rentals.GetRentalResponse;
+import com.kodlamaio.rentAcar.core.services.findex.FindexCheckService;
 import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
@@ -21,8 +22,10 @@ import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.CarRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.RentalRepository;
+import com.kodlamaio.rentAcar.dataAccess.abstracts.UserRespository;
 import com.kodlamaio.rentAcar.entities.concretes.Car;
 import com.kodlamaio.rentAcar.entities.concretes.Rental;
+import com.kodlamaio.rentAcar.entities.concretes.User;
 
 @Service
 public class RentalManager implements RentalService{
@@ -32,6 +35,10 @@ public class RentalManager implements RentalService{
 	private CarRepository carRepository;
 	@Autowired
 	private ModelMapperService modelMapperService;
+	@Autowired
+	private FindexCheckService findexCheckService;
+	@Autowired
+	private UserRespository userRespository;
 	
 	public RentalManager(RentalRepository rentalRepository,CarRepository carRepository, ModelMapperService modelMapperService) {
 		this.rentalRepository = rentalRepository;
@@ -51,6 +58,9 @@ public class RentalManager implements RentalService{
 		rental.setTotalDays(totalDays);
 		
 		Car car = carRepository.findById(createRentalRequest.getCarId());
+		User user = userRespository.findById(createRentalRequest.getUserId());
+
+		ifEqualFindexScore(car.getFindexScore(), user.getNationalIdentity());
 		car.setState(3);
 		rental.setCar(car);
 		
@@ -148,6 +158,13 @@ public class RentalManager implements RentalService{
 		}else {
 			double fullprice = (day * dailyPrice) + 750;
 			return fullprice;
+		}
+	}
+	
+	private void ifEqualFindexScore(int carScore, String nationalIdentity) {
+		int userScore = findexCheckService.checkFindexScore(nationalIdentity);
+		if(userScore < carScore) {
+			throw new BusinessException("KULLANICI.FINDEX.SCORU.DÜŞÜK");
 		}
 	}
 	
