@@ -29,8 +29,11 @@ public class User {
 	@Column(name = "lastName")
 	private String lastName;
 	
-	@Column(name = "tcNo")
-	private String tcNo;
+	@Column(name = "nationalIdentity")
+	private String nationalIdentity;
+	
+	@Column(name = "birthDay")
+	private int birthDay;
 	
 	@Column(name = "email")
 	private String email;

@@ -1,5 +1,6 @@
 package com.kodlamaio.rentAcar.bussines.abstracts;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 import com.kodlamaio.rentAcar.bussines.request.users.CreateUserRequest;
@@ -11,7 +12,7 @@ import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 
 public interface UserService {
-	Result add(CreateUserRequest createUserRequest);
+	Result add(CreateUserRequest createUserRequest) throws NumberFormatException, RemoteException;
 	Result delete(DeleteUserRequest deleteUserRequest);
 	Result update(UpdateUserRequest updateUserRequest);
 	DataResult<List<GetAllUsersResponse>> getAll();

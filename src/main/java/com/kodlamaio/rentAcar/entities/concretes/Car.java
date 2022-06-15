@@ -42,6 +42,8 @@ public class Car {
 	@Column(name = "km")
 	private int km;
 	
+//	@Column(name = "")
+	
 	@Column(name = "state")
 	private int state;
 	

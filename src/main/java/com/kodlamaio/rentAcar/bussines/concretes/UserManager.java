@@ -1,6 +1,7 @@
 package com.kodlamaio.rentAcar.bussines.concretes;
 
 
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import com.kodlamaio.rentAcar.bussines.response.users.GetAllUsersResponse;
 import com.kodlamaio.rentAcar.bussines.response.users.GetByIdUserResponse;
 import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
+import com.kodlamaio.rentAcar.core.utilities.mernis.PersonCheckService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
@@ -30,11 +32,15 @@ public class UserManager implements UserService{
 	private UserRespository userRespository;
 	@Autowired
 	private ModelMapperService modelMapperService;
+	@Autowired
+	private PersonCheckService personCheckService;
 
 	@Override
-	public Result add(CreateUserRequest createUserRequest) {
-		notRepeatTcNo(createUserRequest.getTcNo());
+	public Result add(CreateUserRequest createUserRequest) throws NumberFormatException, RemoteException {
+//		notRepeatTcNo(createUserRequest.getNationalIdentity());
+
 		User user = this.modelMapperService.forRequest().map(createUserRequest, User.class);
+		checkIfPerson(user);
 		this.userRespository.save(user);
 		return new SuccessResult("USER.ADDED");
 	}
@@ -80,15 +86,21 @@ public class UserManager implements UserService{
 		return new SuccessDataResult<GetByIdUserResponse>(response);
 	}
 	
-	
-	private void notRepeatTcNo(String tcNo) {
-		List<User> users = userRespository.findAll();
-		for (User item : users) {
-			if(item.getTcNo() == tcNo) {
-				throw new BusinessException("USER.NOT.EXİST");
-			}
+	private void checkIfPerson(User user) throws NumberFormatException, RemoteException {
+		if(!personCheckService.checkPerson(user)) {
+			throw new BusinessException("USER.NOT.AVAILABLE");
 		}
-		
 	}
+	
+	
+//	private void notRepeatTcNo(String nationalIdentity) {
+//		List<User> users = userRespository.findAll();
+//		for (User item : users) {
+//			if(item.getNationalIdentity() == nationalIdentity) {
+//				throw new BusinessException("USER.NOT.EXİST");
+//			}
+//		}
+//		
+//	}
 
 }

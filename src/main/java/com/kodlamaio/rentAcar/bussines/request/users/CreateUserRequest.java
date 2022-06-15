@@ -16,7 +16,8 @@ public class CreateUserRequest {
 	@Size(min = 2)
 	private String lastName;
 	@Size(min = 11,max = 11)
-	private String tcNo;
+	private String nationalIdentity;
+	private int birthDay;
 	private String email;
 	private String password;
 }
