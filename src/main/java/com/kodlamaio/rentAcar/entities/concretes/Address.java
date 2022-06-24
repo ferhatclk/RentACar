@@ -1,13 +1,12 @@
 package com.kodlamaio.rentAcar.entities.concretes;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -18,16 +17,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "colors")
-public class Color {
+@Table(name = "addresses")
+public class Address {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
 	
-	@Column(name = "name")
-	private String name;
-
-	@OneToMany(mappedBy = "color")
-	List<Car> cars;
+	@Column(name = "contact_address")
+	private String contactAddress;
+	
+	@Column(name = "billing_address")
+	private String billingAddress;
+	
+	@ManyToOne()
+	@JoinColumn(name = "user_id")
+	private User user;
 }

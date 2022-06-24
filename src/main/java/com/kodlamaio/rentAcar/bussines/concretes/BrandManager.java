@@ -22,12 +22,12 @@ import com.kodlamaio.rentAcar.entities.concretes.Brand;
 //brandServiceImpl
 @Service
 public class BrandManager implements BrandService{
-	@Autowired // parametreye bakıp bu interface nin somutunu getir
+	
 	private BrandRepository brandRepository;
-	@Autowired
+
 	private ModelMapperService modelMapperService;
 	
-	
+	@Autowired // parametreye bakıp bu interface nin somutunu getir
 	public BrandManager(BrandRepository brandRepository, ModelMapperService modelMapperService) {
 		this.brandRepository = brandRepository;
 		this.modelMapperService = modelMapperService;

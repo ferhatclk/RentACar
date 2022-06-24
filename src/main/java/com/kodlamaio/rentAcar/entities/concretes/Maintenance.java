@@ -11,8 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +19,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer","handler","cars"})
 @Table(name="maintenances")
 public class Maintenance {
 	@Id()
@@ -29,11 +26,11 @@ public class Maintenance {
 	@Column(name = "id")
 	private int id;
 	
-	@Column(name = "datereturned")
-	private Date dateReturned;
+	@Column(name = "return_date")
+	private Date returnDate;
 	
-	@Column(name="datesent")
-	private Date dateSent;
+	@Column(name="send_date")
+	private Date sendDate;
 	
 	@ManyToOne
 	@JoinColumn(name = "car_id")

@@ -11,9 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +22,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer","handler","cars"})
 @Table(name = "rentals")
 public class Rental {
 	@Id
@@ -44,11 +42,11 @@ public class Rental {
 	private double totalPrice;
 	
 	@ManyToOne
-	@JoinColumn(name = "pickUpCityId")
-	private City pickCity;
+	@JoinColumn(name = "pickup_city_id")
+	private City pickupCity;
 	
 	@ManyToOne
-	@JoinColumn(name = "returnCityId")
+	@JoinColumn(name = "return_city_id")
 	private City returnCity;
 	
 	@ManyToOne
@@ -60,6 +58,9 @@ public class Rental {
 	private User user;
 	
 	@OneToMany(mappedBy = "rental")
-	List<Additional> additionals;
+	List<OrderedAdditionalItem> additionals;
+	
+	@OneToOne(mappedBy = "rental")
+	private Invoice invoice;
 	
 }

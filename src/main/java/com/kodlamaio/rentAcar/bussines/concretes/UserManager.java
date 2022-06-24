@@ -28,12 +28,19 @@ import com.kodlamaio.rentAcar.entities.concretes.User;
 
 @Service
 public class UserManager implements UserService{
-	@Autowired
+
 	private UserRespository userRespository;
-	@Autowired
 	private ModelMapperService modelMapperService;
-	@Autowired
 	private PersonCheckService personCheckService;
+	
+	@Autowired
+	public UserManager(UserRespository userRespository, ModelMapperService modelMapperService,
+			PersonCheckService personCheckService) {
+		this.userRespository = userRespository;
+		this.modelMapperService = modelMapperService;
+		this.personCheckService = personCheckService;
+	}
+
 
 	@Override
 	public Result add(CreateUserRequest createUserRequest) throws NumberFormatException, RemoteException {
@@ -41,7 +48,6 @@ public class UserManager implements UserService{
 
 		User user = this.modelMapperService.forRequest().map(createUserRequest, User.class);
 		checkIfPerson(user);
-		
 		this.userRespository.save(user);
 		return new SuccessResult("USER.ADDED");
 	}

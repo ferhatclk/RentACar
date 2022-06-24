@@ -2,8 +2,8 @@ package com.kodlamaio.rentAcar.dataAccess.abstracts;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.kodlamaio.rentAcar.entities.concretes.Additional;
+import com.kodlamaio.rentAcar.entities.concretes.OrderedAdditionalItem;
 
-public interface AdditionalRepository extends JpaRepository<Additional, Integer>{
-	Additional findById(int id);
+public interface AdditionalRepository extends JpaRepository<OrderedAdditionalItem, Integer>{
+	OrderedAdditionalItem findById(int id);
 }

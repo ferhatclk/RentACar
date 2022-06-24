@@ -22,12 +22,12 @@ import com.kodlamaio.rentAcar.entities.concretes.Color;
 
 @Service
 public class ColorManager implements ColorService{
-	@Autowired
+	
 	private ColorRepository colorRepository;
-	@Autowired
+
 	private ModelMapperService modelMapperService;
 	
-	
+	@Autowired
 	public ColorManager(ColorRepository colorRepository, ModelMapperService modelMapperService) {
 		this.colorRepository = colorRepository;
 		this.modelMapperService = modelMapperService;

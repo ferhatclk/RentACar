@@ -2,6 +2,7 @@ package com.kodlamaio.rentAcar.api.controllers;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +22,8 @@ import com.kodlamaio.rentAcar.core.utilities.result.Result;
 @RequestMapping("/api/rentals")
 public class RentalsController {
 	private RentalService rentalService;
-
+	
+	@Autowired
 	public RentalsController(RentalService rentalService) {
 		this.rentalService = rentalService;
 	}

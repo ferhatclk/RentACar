@@ -20,24 +20,33 @@ import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.AdditionalItemRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.AdditionalRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.RentalRepository;
-import com.kodlamaio.rentAcar.entities.concretes.Additional;
+import com.kodlamaio.rentAcar.entities.concretes.OrderedAdditionalItem;
 import com.kodlamaio.rentAcar.entities.concretes.AdditionalItem;
 import com.kodlamaio.rentAcar.entities.concretes.Rental;
 
 @Service
 public class AdditionalManager implements AdditionalService{
-	@Autowired
+	
 	private ModelMapperService modelMapperService;
-	@Autowired
+
 	private AdditionalRepository additionalRepository;
-	@Autowired
+
 	private RentalRepository rentalRepository;
-	@Autowired
+
 	private AdditionalItemRepository additionalItemRepository;
+
+	@Autowired
+	public AdditionalManager(ModelMapperService modelMapperService, AdditionalRepository additionalRepository,
+			RentalRepository rentalRepository, AdditionalItemRepository additionalItemRepository) {
+		this.modelMapperService = modelMapperService;
+		this.additionalRepository = additionalRepository;
+		this.rentalRepository = rentalRepository;
+		this.additionalItemRepository = additionalItemRepository;
+	}
 
 	@Override
 	public Result add(CreateAdditionalRequest createAdditionalRequest) {
-		Additional additional = modelMapperService.forRequest().map(createAdditionalRequest, Additional.class);
+		OrderedAdditionalItem additional = modelMapperService.forRequest().map(createAdditionalRequest, OrderedAdditionalItem.class);
 		Rental rental = rentalRepository.findById(createAdditionalRequest.getRentalId());
 		additional.setDays(rental.getTotalDays());
 
@@ -59,7 +68,7 @@ public class AdditionalManager implements AdditionalService{
 	@Override
 	public Result update(UpdateAdditionalRequest updateAdditionalRequest) {
 		AdditionalItem additionalItem = additionalItemRepository.findById(updateAdditionalRequest.getAdditionalItemId());
-		Additional additional = modelMapperService.forRequest().map(updateAdditionalRequest, Additional.class);
+		OrderedAdditionalItem additional = modelMapperService.forRequest().map(updateAdditionalRequest, OrderedAdditionalItem.class);
 		Rental rental = rentalRepository.findById(updateAdditionalRequest.getRentalId());
 		
 		additional.setDays(rental.getTotalDays());
@@ -72,7 +81,7 @@ public class AdditionalManager implements AdditionalService{
 
 	@Override
 	public DataResult<List<GetAllAdditionalsResponse>> getAll() {
-		List<Additional> additionals = this.additionalRepository.findAll();
+		List<OrderedAdditionalItem> additionals = this.additionalRepository.findAll();
 		List<GetAllAdditionalsResponse> response = additionals.stream().map(additional -> this.modelMapperService.forResponse()
 				.map(additional, GetAllAdditionalsResponse.class)).collect(Collectors.toList());
 		
@@ -81,7 +90,7 @@ public class AdditionalManager implements AdditionalService{
 
 	@Override
 	public DataResult<GetByIdAdditionalResponse> getById(int id) {
-		Additional additional = additionalRepository.findById(id);
+		OrderedAdditionalItem additional = additionalRepository.findById(id);
 		GetByIdAdditionalResponse response = modelMapperService.forResponse().map(additional, GetByIdAdditionalResponse.class);
 		
 		return new SuccessDataResult<GetByIdAdditionalResponse>(response);

@@ -15,4 +15,5 @@ public class GetByIdUserResponse {
 	private int birthDay;
 	private String email;
 	private String password;
+//	private String address;
 }

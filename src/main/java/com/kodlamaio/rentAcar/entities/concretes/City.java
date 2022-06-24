@@ -26,8 +26,8 @@ public class City {
 	@Column(name = "city_name")
 	private String cityName;
 	
-	@OneToMany(mappedBy = "pickCity")
-	private List<Rental> pickRentals;
+	@OneToMany(mappedBy = "pickupCity")
+	private List<Rental> pickupRentals;
 	
 	@OneToMany(mappedBy = "returnCity")
 	private List<Rental> returnRentals;

@@ -3,7 +3,6 @@ package com.kodlamaio.rentAcar.bussines.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodlamaio.rentAcar.bussines.abstracts.MaintenanceService;
@@ -25,11 +24,11 @@ import com.kodlamaio.rentAcar.entities.concretes.Maintenance;
 
 @Service
 public class MaintenanceManager implements MaintenanceService{
-	@Autowired
+
 	private MaintenanceRepository maintenanceRepository;
-	@Autowired
+
 	private ModelMapperService modelMapperService;
-	@Autowired
+
 	private CarRepository carRepository;
 
 	public MaintenanceManager(MaintenanceRepository maintenanceRepository, CarRepository carRepository, ModelMapperService modelMapperService) {

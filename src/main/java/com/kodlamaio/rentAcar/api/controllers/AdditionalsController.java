@@ -21,9 +21,10 @@ import com.kodlamaio.rentAcar.core.utilities.result.Result;
 @RestController
 @RequestMapping("/api/additionals")
 public class AdditionalsController {
-	@Autowired
+
 	private AdditionalService additionalService;
 
+	@Autowired
 	public AdditionalsController(AdditionalService additionalService) {
 		this.additionalService = additionalService;
 	}

@@ -29,21 +29,23 @@ import com.kodlamaio.rentAcar.entities.concretes.User;
 
 @Service
 public class RentalManager implements RentalService{
-	@Autowired
+
 	private RentalRepository rentalRepository;
-	@Autowired
 	private CarRepository carRepository;
-	@Autowired
 	private ModelMapperService modelMapperService;
-	@Autowired
 	private FindexCheckService findexCheckService;
-	@Autowired
 	private UserRespository userRespository;
 	
-	public RentalManager(RentalRepository rentalRepository,CarRepository carRepository, ModelMapperService modelMapperService) {
+	@Autowired
+	public RentalManager(RentalRepository rentalRepository, CarRepository carRepository, 
+			ModelMapperService modelMapperService, FindexCheckService findexCheckService, UserRespository userRespository) {
+		
 		this.rentalRepository = rentalRepository;
 		this.carRepository = carRepository;
 		this.modelMapperService = modelMapperService;
+		this.findexCheckService = findexCheckService;
+		this.userRespository = userRespository;
+		
 	}
 
 	@Override
@@ -71,7 +73,6 @@ public class RentalManager implements RentalService{
 		
 		rental.setTotalPrice(fullPrice(totalDays, dailyPrice, pickCity, returnCity));
 		rentalRepository.save(rental);
-
 		return new SuccessResult("RENTAL.ADDED");
 		
 	}

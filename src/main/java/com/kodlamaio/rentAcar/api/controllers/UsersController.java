@@ -25,8 +25,13 @@ import com.kodlamaio.rentAcar.core.utilities.result.Result;
 @RestController
 @RequestMapping("/api/users")
 public class UsersController {
-	@Autowired
+	
 	private UserService userService;
+	
+	@Autowired
+	public UsersController(UserService userService) {
+		this.userService = userService;
+	}
 
 	@PostMapping("/add")
 	public Result add(@RequestBody @Valid CreateUserRequest createUserRequest) throws NumberFormatException, RemoteException {

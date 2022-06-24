@@ -26,16 +26,16 @@ public class User {
 	@Column(name = "id")
 	private int id;
 	
-	@Column(name = "firstName")
+	@Column(name = "first_name")
 	private String firstName;
 	
-	@Column(name = "lastName")
+	@Column(name = "last_name")
 	private String lastName;
 	
-	@Column(name = "nationalIdentity")
+	@Column(name = "national_identity")
 	private String nationalIdentity;
 	
-	@Column(name = "birthDay")
+	@Column(name = "birth_day")
 	private int birthDay;
 	
 	@Column(name = "email")
@@ -43,6 +43,9 @@ public class User {
 	
 	@Column(name = "password")
 	private String password;
+	
+	@OneToMany(mappedBy = "user")
+	private List<Address> addresses;
 	
 	@OneToMany(mappedBy = "user")
 	private List<Rental> rentals;

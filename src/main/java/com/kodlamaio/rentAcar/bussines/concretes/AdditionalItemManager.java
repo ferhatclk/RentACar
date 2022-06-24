@@ -22,11 +22,12 @@ import com.kodlamaio.rentAcar.entities.concretes.AdditionalItem;
 
 @Service
 public class AdditionalItemManager implements AdditionalItemService{
-	@Autowired
+	
 	private AdditionalItemRepository additionalItemRepository;
-	@Autowired
+
 	private ModelMapperService modelMapperService;
 
+	@Autowired
 	public AdditionalItemManager(AdditionalItemRepository additionalItemRepository, ModelMapperService modelMapperService) {
 		this.additionalItemRepository = additionalItemRepository;
 		this.modelMapperService = modelMapperService;

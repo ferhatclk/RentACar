@@ -16,6 +16,7 @@ public class GetAllCarsResponse {
 	private double dailyPrice;
 	private String plate;
 	private int km;
+	private int findexScore;
 	private int state;
 	private Brand brand;
 	private Color color;

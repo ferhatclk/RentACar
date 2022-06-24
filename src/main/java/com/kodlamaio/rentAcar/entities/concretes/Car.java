@@ -12,8 +12,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +20,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer","handler","cars"})
 @Table(name = "cars")
 public class Car {
 	@Id()
@@ -33,7 +30,7 @@ public class Car {
 	@Column(name = "description")
 	private String description;
 	
-	@Column(name = "dailyPrice")
+	@Column(name = "daily_price")
 	private double dailyPrice;
 	
 	@Column(name = "plate")
