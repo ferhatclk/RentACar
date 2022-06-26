@@ -6,37 +6,38 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kodlamaio.rentAcar.bussines.abstracts.AdditionalService;
-import com.kodlamaio.rentAcar.bussines.request.additionals.CreateAdditionalRequest;
-import com.kodlamaio.rentAcar.bussines.request.additionals.DeleteAdditionalRequest;
-import com.kodlamaio.rentAcar.bussines.request.additionals.UpdateAdditionalRequest;
-import com.kodlamaio.rentAcar.bussines.response.additionals.GetAllAdditionalsResponse;
-import com.kodlamaio.rentAcar.bussines.response.additionals.GetByIdAdditionalResponse;
+import com.kodlamaio.rentAcar.bussines.abstracts.OrderedAdditionalItemService;
+import com.kodlamaio.rentAcar.bussines.request.orderedAdditionalItems.CreateOrderedAdditionalItemRequest;
+import com.kodlamaio.rentAcar.bussines.request.orderedAdditionalItems.DeleteOrderedAdditionalItemRequest;
+import com.kodlamaio.rentAcar.bussines.request.orderedAdditionalItems.UpdateOrderedAdditionalItemRequest;
+import com.kodlamaio.rentAcar.bussines.response.orderedAdditionalItem.GetAllOrderedAdditionalItemsResponse;
+import com.kodlamaio.rentAcar.bussines.response.orderedAdditionalItem.GetByIdOrderedAdditionalItemResponse;
+import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.AdditionalItemRepository;
-import com.kodlamaio.rentAcar.dataAccess.abstracts.AdditionalRepository;
+import com.kodlamaio.rentAcar.dataAccess.abstracts.OrderedAdditionalItemRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.RentalRepository;
 import com.kodlamaio.rentAcar.entities.concretes.OrderedAdditionalItem;
 import com.kodlamaio.rentAcar.entities.concretes.AdditionalItem;
 import com.kodlamaio.rentAcar.entities.concretes.Rental;
 
 @Service
-public class AdditionalManager implements AdditionalService{
+public class OrderedAdditionalItemManager implements OrderedAdditionalItemService{
 	
 	private ModelMapperService modelMapperService;
 
-	private AdditionalRepository additionalRepository;
+	private OrderedAdditionalItemRepository additionalRepository;
 
 	private RentalRepository rentalRepository;
 
 	private AdditionalItemRepository additionalItemRepository;
 
 	@Autowired
-	public AdditionalManager(ModelMapperService modelMapperService, AdditionalRepository additionalRepository,
+	public OrderedAdditionalItemManager(ModelMapperService modelMapperService, OrderedAdditionalItemRepository additionalRepository,
 			RentalRepository rentalRepository, AdditionalItemRepository additionalItemRepository) {
 		this.modelMapperService = modelMapperService;
 		this.additionalRepository = additionalRepository;
@@ -45,7 +46,8 @@ public class AdditionalManager implements AdditionalService{
 	}
 
 	@Override
-	public Result add(CreateAdditionalRequest createAdditionalRequest) {
+	public Result add(CreateOrderedAdditionalItemRequest createAdditionalRequest) {
+		checkIfAdditionalItem(createAdditionalRequest.getAdditionalItemId());
 		OrderedAdditionalItem additional = modelMapperService.forRequest().map(createAdditionalRequest, OrderedAdditionalItem.class);
 		Rental rental = rentalRepository.findById(createAdditionalRequest.getRentalId());
 		additional.setDays(rental.getTotalDays());
@@ -60,13 +62,13 @@ public class AdditionalManager implements AdditionalService{
 	}
 
 	@Override
-	public Result delete(DeleteAdditionalRequest deleteAdditionalRequest) {
+	public Result delete(DeleteOrderedAdditionalItemRequest deleteAdditionalRequest) {
 		additionalRepository.deleteById(deleteAdditionalRequest.getId());
 		return new SuccessResult("ADDITIONAL.DELETED");
 	}
 
 	@Override
-	public Result update(UpdateAdditionalRequest updateAdditionalRequest) {
+	public Result update(UpdateOrderedAdditionalItemRequest updateAdditionalRequest) {
 		AdditionalItem additionalItem = additionalItemRepository.findById(updateAdditionalRequest.getAdditionalItemId());
 		OrderedAdditionalItem additional = modelMapperService.forRequest().map(updateAdditionalRequest, OrderedAdditionalItem.class);
 		Rental rental = rentalRepository.findById(updateAdditionalRequest.getRentalId());
@@ -80,20 +82,24 @@ public class AdditionalManager implements AdditionalService{
 	}
 
 	@Override
-	public DataResult<List<GetAllAdditionalsResponse>> getAll() {
+	public DataResult<List<GetAllOrderedAdditionalItemsResponse>> getAll() {
 		List<OrderedAdditionalItem> additionals = this.additionalRepository.findAll();
-		List<GetAllAdditionalsResponse> response = additionals.stream().map(additional -> this.modelMapperService.forResponse()
-				.map(additional, GetAllAdditionalsResponse.class)).collect(Collectors.toList());
+		List<GetAllOrderedAdditionalItemsResponse> response = additionals.stream().map(additional -> this.modelMapperService.forResponse()
+				.map(additional, GetAllOrderedAdditionalItemsResponse.class)).collect(Collectors.toList());
 		
-		return new SuccessDataResult<List<GetAllAdditionalsResponse>>(response,"ADDITIONALS.LISTED");
+		return new SuccessDataResult<List<GetAllOrderedAdditionalItemsResponse>>(response,"ADDITIONALS.LISTED");
 	}
 
 	@Override
-	public DataResult<GetByIdAdditionalResponse> getById(int id) {
+	public DataResult<GetByIdOrderedAdditionalItemResponse> getById(int id) {
 		OrderedAdditionalItem additional = additionalRepository.findById(id);
-		GetByIdAdditionalResponse response = modelMapperService.forResponse().map(additional, GetByIdAdditionalResponse.class);
+		GetByIdOrderedAdditionalItemResponse response = modelMapperService.forResponse().map(additional, GetByIdOrderedAdditionalItemResponse.class);
 		
-		return new SuccessDataResult<GetByIdAdditionalResponse>(response);
+		return new SuccessDataResult<GetByIdOrderedAdditionalItemResponse>(response);
 	}
-
+	
+	private void checkIfAdditionalItem(int id) {
+		AdditionalItem additionalItem = additionalItemRepository.findById(id);
+		if(additionalItem == null) throw new BusinessException("ADDITIONAL.ITEM.NOT.FOUND!!!");
+	}
 }

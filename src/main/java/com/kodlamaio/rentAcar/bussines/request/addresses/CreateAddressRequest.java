@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class CreateAddressRequest {
 	@NotNull
 	private String contactAddress;
-	
+
 	private String billingAddress;
 	private int userId;
 }

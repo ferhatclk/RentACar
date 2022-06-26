@@ -39,8 +39,8 @@ public class MaintenanceManager implements MaintenanceService{
 
 	@Override
 	public Result add(CreateMaintenanceRequest createMaintenanceRequest) {
-		
-		ifCheckState(createMaintenanceRequest.getCarId());
+		checkIfCar(createMaintenanceRequest.getCarId());
+		checkIfState(createMaintenanceRequest.getCarId());
 		Maintenance maintenance = this.modelMapperService.forRequest().map(createMaintenanceRequest, Maintenance.class);
 		
 		Car car = carRepository.findById(createMaintenanceRequest.getCarId());
@@ -64,7 +64,8 @@ public class MaintenanceManager implements MaintenanceService{
 
 	@Override
 	public Result update(UpdateMaintenenceRequest updateMaintenenceRequest) {
-		ifCheckState(updateMaintenenceRequest.getCarId());
+		checkIfCar(updateMaintenenceRequest.getCarId());
+		checkIfState(updateMaintenenceRequest.getCarId());
 		stateCar(updateMaintenenceRequest.getId());
 		Maintenance maintenance = this.modelMapperService.forRequest().map(updateMaintenenceRequest, Maintenance.class);
 		
@@ -80,7 +81,7 @@ public class MaintenanceManager implements MaintenanceService{
 
 	@Override
 	public DataResult<GetMaintenanceResponse> getById(int id) {
-		
+		checkIfCar(id);
 		Maintenance maintenance = maintenanceRepository.findById(id);
 		GetMaintenanceResponse response = this.modelMapperService.forResponse().map(maintenance, GetMaintenanceResponse.class);
 		return new SuccessDataResult<GetMaintenanceResponse>(response,"GET_BY_ID");
@@ -94,7 +95,14 @@ public class MaintenanceManager implements MaintenanceService{
 		return new SuccessDataResult<List<GetAllMaintenancesResponse>>(response,"MAINTENACES.LISTED");
 	}
 	
-	private void ifCheckState(int id) {
+	private void checkIfCar(int id) {
+		Car car = carRepository.findById(id);
+		if(car==null) {
+			throw new BusinessException("CAR.NOT.AVAILABLE!!!!");
+		}
+	}
+	
+	private void checkIfState(int id) {
 		Car car = carRepository.findById(id);
 		if(car.getState()==3) {
 			throw new BusinessException("STATE.DOES.NOT.FIT!!!!");

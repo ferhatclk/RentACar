@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Aspect
 @Component
 public class LoggingAspect {
-	JSONArray data = new JSONArray();
+	JSONArray jsonArray = new JSONArray();
 	
 	//advice
 //	@Around("execution(* com.kodlamaio.rentAcar.bussines.concretes.BrandManager.getById(int))")
@@ -56,15 +56,15 @@ public class LoggingAspect {
 		
 		try (FileWriter fileWriter = new FileWriter(file,true)){
 			
-			StringBuilder stringBuilder = new StringBuilder();
-			
-			stringBuilder.append("date : " + LocalDate.now()+"\n");
-			stringBuilder.append("className : " + joinPoint.getTarget().getClass().getSimpleName()+"\n");
-			stringBuilder.append("methodName : " + signature.getMethod().getName()+"\n");
-			
-			if(signature.getMethod().getName() != "getAll") {
-				stringBuilder.append("parameters : " + mapper.writeValueAsString(parameters));
-			}
+//			StringBuilder stringBuilder = new StringBuilder();
+//			
+//			stringBuilder.append("date : " + LocalDate.now()+"\n");
+//			stringBuilder.append("className : " + joinPoint.getTarget().getClass().getSimpleName()+"\n");
+//			stringBuilder.append("methodName : " + signature.getMethod().getName()+"\n");
+//			
+//			if(signature.getMethod().getName() != "getAll") {
+//				stringBuilder.append("parameters : " + mapper.writeValueAsString(parameters));
+//			}
 			
 			JsonObject jsonObject = Json.createObjectBuilder()
 					.add("date : " , LocalDate.now().toString()+'\n') // String
@@ -73,13 +73,13 @@ public class LoggingAspect {
 			        .add("parameters : " , mapper.writeValueAsString(parameters)+"\n")
 	                .build();
 			
-			data.add(jsonObject);
+			jsonArray.add(jsonObject);
 			BufferedWriter bWriter = new BufferedWriter(fileWriter);
-			bWriter.write(data.toString());
+			bWriter.write(jsonArray.toString());
 			bWriter.newLine();
 			bWriter.close();
 			
-			System.out.println(data);
+			System.out.println(jsonArray);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

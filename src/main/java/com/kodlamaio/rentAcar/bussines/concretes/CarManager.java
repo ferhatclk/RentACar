@@ -15,11 +15,12 @@ import com.kodlamaio.rentAcar.bussines.response.cars.GetByIdCarResponse;
 import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
-import com.kodlamaio.rentAcar.core.utilities.result.ErrorResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
+import com.kodlamaio.rentAcar.dataAccess.abstracts.BrandRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.CarRepository;
+import com.kodlamaio.rentAcar.entities.concretes.Brand;
 import com.kodlamaio.rentAcar.entities.concretes.Car;
 
 @Service
@@ -29,15 +30,20 @@ public class CarManager implements CarService{
 
 	private ModelMapperService modelMapperService;
 	
+	private BrandRepository brandRepository;
+	
 	@Autowired
-	public CarManager(CarRepository carRepository,ModelMapperService modelMapperService) {
+	public CarManager(CarRepository carRepository,ModelMapperService modelMapperService,
+			BrandRepository brandRepository) {
 		this.carRepository = carRepository;
 		this.modelMapperService = modelMapperService;
+		this.brandRepository = brandRepository;
 	}
 	
 	@Override
 	public Result add(CreateCarRequest createCarRequest) {
-		ifCheckExistCount(createCarRequest.getBrandId());
+		checkIfBrand(createCarRequest.getBrandId());
+		checkIfExistCount(createCarRequest.getBrandId());
 		Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
 		car.setState(1);
 		this.carRepository.save(car);
@@ -48,13 +54,11 @@ public class CarManager implements CarService{
 
 	@Override
 	public Result delete(DeleteCarRequest deleteCarRequest) {
+		checkIfCar(deleteCarRequest.getId());
 		Car car = carRepository.findById(deleteCarRequest.getId());
-		if(car.getState()==1) {
-			carRepository.deleteById(deleteCarRequest.getId());
-			return new SuccessResult("CAR.DELETE");
-		}else {
-			return new ErrorResult("COULD.NOT.DELETE!!!");
-		}
+		checkIfCarState(car.getState());
+		carRepository.deleteById(deleteCarRequest.getId());
+		return new SuccessResult("CAR.DELETE");
 		
 	}
 
@@ -81,11 +85,28 @@ public class CarManager implements CarService{
 		return new SuccessDataResult<GetByIdCarResponse>(response,"CAR.GET.ID");
 	}
 	
-	private void ifCheckExistCount(int id) {
+	private void checkIfExistCount(int id) {
 		List<Car> cars = carRepository.getByBrandId(id);
 		if(cars.size() > 4) {
 			throw new BusinessException("CAR.EXIST");
 		}
 	}
-
+	
+	private void checkIfBrand(int id) {
+		Brand brand = brandRepository.findById(id);
+		if(brand == null) {
+			throw new BusinessException("BRAND.NOT.FOUND!!!");
+		}
+	}
+	
+	private void checkIfCar(int id) {
+		Car car = carRepository.findById(id);
+		if(car == null) throw new BusinessException("CAR.NOT.FOUND!!");
+	}
+	
+	private void checkIfCarState(int state) {
+		if(state !=1) {
+			throw new BusinessException("CAR.NOT.DELETE!!!");
+		}
+	}
 }

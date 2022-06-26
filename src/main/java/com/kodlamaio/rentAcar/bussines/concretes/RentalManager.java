@@ -50,8 +50,9 @@ public class RentalManager implements RentalService{
 
 	@Override
 	public Result add(CreateRentalRequest createRentalRequest) {
-		ifCheckState(createRentalRequest.getCarId());
-		checkDate(createRentalRequest.getPickupDate(),createRentalRequest.getReturnDate());
+		checkIfCar(createRentalRequest.getCarId());
+		checkIfState(createRentalRequest.getCarId());
+		checkIfDate(createRentalRequest.getPickupDate(),createRentalRequest.getReturnDate());
 		Rental rental = this.modelMapperService.forRequest().map(createRentalRequest, Rental.class);
 		 
 		Date pickDate = createRentalRequest.getPickupDate();
@@ -93,9 +94,9 @@ public class RentalManager implements RentalService{
 	@Override
 	public Result update(UpdateRentalRequest updateRentalRequest) {
 		
-		ifCheckState(updateRentalRequest.getCarId());
+		checkIfState(updateRentalRequest.getCarId());
 		stateCar(updateRentalRequest.getId());
-		checkDate(updateRentalRequest.getPickupDate(),updateRentalRequest.getReturnDate());
+		checkIfDate(updateRentalRequest.getPickupDate(),updateRentalRequest.getReturnDate());
 		Rental rental = this.modelMapperService.forRequest().map(updateRentalRequest, Rental.class);
 		
 		Car car = carRepository.findById(updateRentalRequest.getCarId());
@@ -135,14 +136,19 @@ public class RentalManager implements RentalService{
 		return new SuccessDataResult<GetRentalResponse>(response,"GET.BY.ID.RENTAL");
 	}
 	
-	private void ifCheckState(int id) {
+	private void checkIfCar(int id) {
+		Car car = carRepository.findById(id);
+		if(car == null) throw new BusinessException("CAR.NOT.FOUND!!");
+	}
+	
+	private void checkIfState(int id) {
 		Car car = carRepository.findById(id);
 		if(car.getState()==2) {
 			throw new BusinessException("STATE.DOES.NOT.FIT!!!!");
 		}
 	}
 	
-	private void checkDate(Date dateReturned, Date datePickup) {
+	private void checkIfDate(Date dateReturned, Date datePickup) {
 		if(!datePickup.after(dateReturned)) {
 			throw new BusinessException("RETURN.DATE.IS.INCORRECT!!!!");
 		}

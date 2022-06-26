@@ -11,6 +11,7 @@ import com.kodlamaio.rentAcar.bussines.request.brands.CreateBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.DeleteBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.UpdateBrandRequest;
 import com.kodlamaio.rentAcar.bussines.response.brands.GetAllBrandsResponse;
+import com.kodlamaio.rentAcar.bussines.response.brands.GetByIdBrandResponse;
 import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
@@ -45,26 +46,17 @@ public class BrandManager implements BrandService{
 	
 	@Override
 	public Result delete(DeleteBrandRequest deleteBrandRequest) {
+		checkIfBrand(deleteBrandRequest.getId());
 		brandRepository.deleteById(deleteBrandRequest.getId());
 		return new SuccessResult("BRAND.DELETE");
 	}
 	
 	@Override
 	public Result update(UpdateBrandRequest updateBrandRequest) {
-		
 		Brand brandToUpdate = this.modelMapperService.forRequest().map(updateBrandRequest, Brand.class);
 		brandRepository.save(brandToUpdate);
 		return new SuccessResult("BRAND.UPDATE");
 	}
-	
-	
-	private void checkIfBrandExistByName(String name) {
-		Brand currentBrand = this.brandRepository.findByName(name);
-		if(currentBrand!=null) {
-			throw new BusinessException("BRAND.EXİST");
-		}
-	}
-
 
 	@Override
 	public DataResult<List<GetAllBrandsResponse>> getAll() {
@@ -76,10 +68,20 @@ public class BrandManager implements BrandService{
 
 
 	@Override
-	public DataResult<Brand> getById(int id) {
-		return new SuccessDataResult<Brand>(this.brandRepository.findById(id));
+	public DataResult<GetByIdBrandResponse> getById(int id) {
+		Brand brand = this.brandRepository.findById(id);
+		GetByIdBrandResponse response = modelMapperService.forResponse().map(brand, GetByIdBrandResponse.class);
+		return new SuccessDataResult<GetByIdBrandResponse>(response);
 	}
 
-
+	private void checkIfBrand(int id) {
+		Brand brand = brandRepository.findById(id);
+		if(brand == null) throw new BusinessException("BRAND.NOT.FOUND!!");
+	}
+	
+	private void checkIfBrandExistByName(String name) {
+		Brand currentBrand = this.brandRepository.findByName(name);
+		if(currentBrand!=null) throw new BusinessException("BRAND.EXİST");
+	}
 	
 }

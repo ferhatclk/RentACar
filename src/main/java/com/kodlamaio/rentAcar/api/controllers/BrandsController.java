@@ -14,11 +14,10 @@ import com.kodlamaio.rentAcar.bussines.request.brands.CreateBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.DeleteBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.UpdateBrandRequest;
 import com.kodlamaio.rentAcar.bussines.response.brands.GetAllBrandsResponse;
+import com.kodlamaio.rentAcar.bussines.response.brands.GetByIdBrandResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
-import com.kodlamaio.rentAcar.entities.concretes.Brand;
 
-//localhost:8080/api/brands/sayhello
 @RestController
 @RequestMapping("/api/brands")
 public class BrandsController {
@@ -29,14 +28,8 @@ public class BrandsController {
 	public BrandsController(BrandService brandService) {
 		this.brandService = brandService;
 	}
-
-	@GetMapping("/getall")  // endpoint
-	public DataResult<List<GetAllBrandsResponse>> getAll() {
-		 
-		return brandService.getAll();
-	}
 	
-	@PostMapping("/add")
+	@PostMapping("/add")  // endpoint
 	public Result add(@RequestBody CreateBrandRequest createBrandRequest) {
 		return this.brandService.add(createBrandRequest);
 	}
@@ -51,8 +44,14 @@ public class BrandsController {
 		return brandService.update(updateBrandRequest);
 	}
 	
+	@GetMapping("/getall") 
+	public DataResult<List<GetAllBrandsResponse>> getAll() {
+		 
+		return brandService.getAll();
+	}
+	
 	@GetMapping("/getbyid")
-	public DataResult<Brand> GetById(int id) {
+	public DataResult<GetByIdBrandResponse> GetById(int id) {
 		return brandService.getById(id);
 	}
 }

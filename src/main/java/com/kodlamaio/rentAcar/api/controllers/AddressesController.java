@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kodlamaio.rentAcar.bussines.abstracts.AddressService;
 import com.kodlamaio.rentAcar.bussines.request.addresses.CreateAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.DeleteAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateBillingAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateContactAddressRequest;
 import com.kodlamaio.rentAcar.bussines.response.address.GetAllAddressResponse;
+import com.kodlamaio.rentAcar.bussines.response.address.GetByIdAddressResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 
@@ -33,6 +35,11 @@ public class AddressesController {
 		return addressService.add(createAddressRequest);
 	}
 	
+	@PostMapping("delete")
+	public Result delete(DeleteAddressRequest deleteAddressRequest) {
+		return addressService.delete(deleteAddressRequest);
+	}
+	
 	@PostMapping("updateContactAddress")
 	public Result updateContactAddress(@RequestBody UpdateContactAddressRequest updateContactAddressRequest) {
 		return addressService.updateContactAddress(updateContactAddressRequest);
@@ -46,5 +53,10 @@ public class AddressesController {
 	@GetMapping("getall")
 	public DataResult<List<GetAllAddressResponse>> getAll(){
 		return addressService.getAll();
+	}
+	
+	@GetMapping("getById")
+	public DataResult<GetByIdAddressResponse> getById(int id){
+		return addressService.getById(id);
 	}
 }

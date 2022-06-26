@@ -1,4 +1,4 @@
-package com.kodlamaio.rentAcar.bussines.response.additionals;
+package com.kodlamaio.rentAcar.bussines.response.orderedAdditionalItem;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetAllAdditionalsResponse {
+public class GetByIdOrderedAdditionalItemResponse {
 	private int id;
 	private int rentalId;
 	private int additionalItemId;

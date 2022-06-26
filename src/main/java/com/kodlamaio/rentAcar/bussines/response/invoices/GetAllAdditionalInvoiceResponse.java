@@ -1,9 +1,5 @@
 package com.kodlamaio.rentAcar.bussines.response.invoices;
 
-import java.util.List;
-
-import com.kodlamaio.rentAcar.entities.concretes.OrderedAdditionalItem;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

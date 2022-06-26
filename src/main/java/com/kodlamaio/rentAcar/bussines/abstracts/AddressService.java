@@ -7,6 +7,7 @@ import com.kodlamaio.rentAcar.bussines.request.addresses.DeleteAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateBillingAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateContactAddressRequest;
 import com.kodlamaio.rentAcar.bussines.response.address.GetAllAddressResponse;
+import com.kodlamaio.rentAcar.bussines.response.address.GetByIdAddressResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 
@@ -16,4 +17,5 @@ public interface AddressService {
 	Result updateContactAddress(UpdateContactAddressRequest updateContactAddressRequest);
 	Result updateBillingAddress(UpdateBillingAddressRequest updateBillingAddressRequest);
 	DataResult<List<GetAllAddressResponse>> getAll();
+	DataResult<GetByIdAddressResponse> getById(int id);
 }

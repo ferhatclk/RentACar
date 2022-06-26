@@ -6,10 +6,9 @@ import com.kodlamaio.rentAcar.bussines.request.brands.CreateBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.DeleteBrandRequest;
 import com.kodlamaio.rentAcar.bussines.request.brands.UpdateBrandRequest;
 import com.kodlamaio.rentAcar.bussines.response.brands.GetAllBrandsResponse;
+import com.kodlamaio.rentAcar.bussines.response.brands.GetByIdBrandResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
-//import com.kodlamaio.rentAcar.bussines.request.brands.GetBrandRequest;
-import com.kodlamaio.rentAcar.entities.concretes.Brand;
 
 public interface BrandService {
 	Result add(CreateBrandRequest createBrandRequest);
@@ -20,6 +19,6 @@ public interface BrandService {
 	
 	DataResult<List<GetAllBrandsResponse>>  getAll();
 	
-	DataResult<Brand> getById(int id);
+	DataResult<GetByIdBrandResponse> getById(int id);
 	
 }
