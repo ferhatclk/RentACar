@@ -53,6 +53,7 @@ public class BrandManager implements BrandService{
 	
 	@Override
 	public Result update(UpdateBrandRequest updateBrandRequest) {
+		checkIfBrand(updateBrandRequest.getId());
 		Brand brandToUpdate = this.modelMapperService.forRequest().map(updateBrandRequest, Brand.class);
 		brandRepository.save(brandToUpdate);
 		return new SuccessResult("BRAND.UPDATE");

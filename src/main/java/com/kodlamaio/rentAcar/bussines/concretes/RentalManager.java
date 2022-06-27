@@ -21,11 +21,13 @@ import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.CarRepository;
+import com.kodlamaio.rentAcar.dataAccess.abstracts.CorporateCustomerRepository;
+import com.kodlamaio.rentAcar.dataAccess.abstracts.IndividualCustomerRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.RentalRepository;
-import com.kodlamaio.rentAcar.dataAccess.abstracts.UserRespository;
 import com.kodlamaio.rentAcar.entities.concretes.Car;
+import com.kodlamaio.rentAcar.entities.concretes.CorporateCustomer;
+import com.kodlamaio.rentAcar.entities.concretes.IndividualCustomer;
 import com.kodlamaio.rentAcar.entities.concretes.Rental;
-import com.kodlamaio.rentAcar.entities.concretes.User;
 
 @Service
 public class RentalManager implements RentalService{
@@ -34,22 +36,24 @@ public class RentalManager implements RentalService{
 	private CarRepository carRepository;
 	private ModelMapperService modelMapperService;
 	private FindexCheckService findexCheckService;
-	private UserRespository userRespository;
+	private IndividualCustomerRepository individualCustomerRepository;
+	private CorporateCustomerRepository corporateCustomerRepository;
 	
 	@Autowired
 	public RentalManager(RentalRepository rentalRepository, CarRepository carRepository, 
-			ModelMapperService modelMapperService, FindexCheckService findexCheckService, UserRespository userRespository) {
-		
+			ModelMapperService modelMapperService, FindexCheckService findexCheckService,
+			IndividualCustomerRepository individualCustomerRepository,CorporateCustomerRepository comporateCustomerRepository) {
+		this.corporateCustomerRepository = comporateCustomerRepository;
 		this.rentalRepository = rentalRepository;
 		this.carRepository = carRepository;
 		this.modelMapperService = modelMapperService;
 		this.findexCheckService = findexCheckService;
-		this.userRespository = userRespository;
+		this.individualCustomerRepository = individualCustomerRepository;
 		
 	}
 
 	@Override
-	public Result add(CreateRentalRequest createRentalRequest) {
+	public Result addForIndividual(CreateRentalRequest createRentalRequest) {
 		checkIfCar(createRentalRequest.getCarId());
 		checkIfState(createRentalRequest.getCarId());
 		checkIfDate(createRentalRequest.getPickupDate(),createRentalRequest.getReturnDate());
@@ -62,9 +66,9 @@ public class RentalManager implements RentalService{
 		rental.setTotalDays(totalDays);
 		
 		Car car = carRepository.findById(createRentalRequest.getCarId());
-		User user = userRespository.findById(createRentalRequest.getUserId());
+		IndividualCustomer individualCustomer = individualCustomerRepository.findById(createRentalRequest.getCustomerId());
 
-		ifEqualFindexScore(car.getFindexScore(), user.getNationalIdentity());
+		ifEqualFindexScore(car.getFindexScore(), individualCustomer.getNationalIdentity());
 		car.setState(3);
 		rental.setCar(car);
 		
@@ -74,15 +78,57 @@ public class RentalManager implements RentalService{
 		
 		rental.setTotalPrice(fullPrice(totalDays, dailyPrice, pickCity, returnCity));
 		rentalRepository.save(rental);
-		return new SuccessResult("RENTAL.ADDED");
+		return new SuccessResult("RENTAL.ADDED.FOR.INDIVIDUAL.CUSTOMER");
 		
+	}
+	
+	@Override
+	public Result addForCorporate(CreateRentalRequest createRentalRequest) {
+		checkIfCar(createRentalRequest.getCarId());
+		checkIfState(createRentalRequest.getCarId());
+		checkIfDate(createRentalRequest.getPickupDate(), createRentalRequest.getReturnDate());
+		Rental rental = modelMapperService.forRequest().map(createRentalRequest, Rental.class);
+		
+		Date pickDate = createRentalRequest.getPickupDate();
+		Date returnDate = createRentalRequest.getReturnDate();
+		
+		long totalDays = dayDifference(pickDate, returnDate);
+		rental.setTotalDays(totalDays);
+		
+		Car car = carRepository.findById(createRentalRequest.getCarId());
+		
+//		CorporateCustomer corporateCustomer = comporateCustomerRepository.findById(createRentalRequest.getCustomerId());
+//		ifEqualFindexScore(car.getFindexScore(), corporateCustomer.getCorporateCustomerTaxNumber());
+		car.setState(3);
+		rental.setCar(car);
+		
+		double dailyPrice = car.getDailyPrice();
+		int pickCity = createRentalRequest.getPickUpCityId();
+		int returnCity = createRentalRequest.getReturnCityId();
+		
+		rental.setTotalPrice(fullPrice(totalDays, dailyPrice, pickCity, returnCity));
+		rentalRepository.save(rental);
+		return new SuccessResult("RENTAL.ADDED.FOR.CORPORATE.CUSTOMER");
 	}
 
 	@Override
-	public Result delete(DeleteRentalRequest deleteRentalRequest) {
+	public Result deleteForCorporate(DeleteRentalRequest deleteRentalRequest) {
 		
 		Rental rental = rentalRepository.findById(deleteRentalRequest.getId());
+		checkIfCorporateCustomer(rental.getCustomer().getCustomerId());
+		Car car = rental.getCar();
+		car.setState(1);
+		carRepository.save(car);
+
+		rentalRepository.delete(rental);
+		return new SuccessResult("RENTAL.DELETED");
+	}
+	
+	@Override
+	public Result deleteForIndividual(DeleteRentalRequest deleteRentalRequest) {
 		
+		Rental rental = rentalRepository.findById(deleteRentalRequest.getId());
+		checkIfIndividualCustomer(rental.getCustomer().getCustomerId());
 		Car car = rental.getCar();
 		car.setState(1);
 		carRepository.save(car);
@@ -92,8 +138,43 @@ public class RentalManager implements RentalService{
 	}
 
 	@Override
-	public Result update(UpdateRentalRequest updateRentalRequest) {
+	public Result updateForIndividual(UpdateRentalRequest updateRentalRequest) {
+		checkIfIndividualCustomer(updateRentalRequest.getCustomerId());
+		checkIfState(updateRentalRequest.getCarId());
+		stateCar(updateRentalRequest.getId());
+		checkIfDate(updateRentalRequest.getPickupDate(),updateRentalRequest.getReturnDate());
+		Rental rental = this.modelMapperService.forRequest().map(updateRentalRequest, Rental.class);
 		
+		Car car = carRepository.findById(updateRentalRequest.getCarId());
+		car.setState(3);
+		rental.setCar(car);
+		
+		IndividualCustomer individualCustomer = individualCustomerRepository.findById(updateRentalRequest.getCustomerId());
+		ifEqualFindexScore(car.getFindexScore(), individualCustomer.getNationalIdentity());
+		
+		
+		Date pickDate = updateRentalRequest.getPickupDate();
+		Date returnDate = updateRentalRequest.getReturnDate();
+		
+		long totalDays = dayDifference(pickDate, returnDate);
+		rental.setTotalDays(totalDays);
+		
+		int pickCity = updateRentalRequest.getPickUpCityId();
+		int returnCity = updateRentalRequest.getReturnCityId();
+	
+		double dailyPrice = car.getDailyPrice();
+		rental.setTotalPrice(fullPrice(totalDays, dailyPrice,  pickCity, returnCity));
+		
+		rentalRepository.save(rental);
+		
+		return new SuccessResult("RENTAL.UPDATED.FOR.INDIVIDUAL");
+		
+	}
+	
+	
+	@Override
+	public Result updateForCorporate(UpdateRentalRequest updateRentalRequest) {
+		checkIfCorporateCustomer(updateRentalRequest.getCustomerId());
 		checkIfState(updateRentalRequest.getCarId());
 		stateCar(updateRentalRequest.getId());
 		checkIfDate(updateRentalRequest.getPickupDate(),updateRentalRequest.getReturnDate());
@@ -117,9 +198,10 @@ public class RentalManager implements RentalService{
 		
 		rentalRepository.save(rental);
 		
-		return new SuccessResult("RENTAL.UPDATED");
+		return new SuccessResult("RENTAL.UPDATED.FOR.CORPORATE");
 		
 	}
+	
 
 	@Override
 	public DataResult<List<GetAllRentalsResponse>> getAll() {
@@ -134,6 +216,16 @@ public class RentalManager implements RentalService{
 		Rental rental = this.rentalRepository.findById(id);
 		GetRentalResponse response = this.modelMapperService.forResponse().map(rental, GetRentalResponse.class);
 		return new SuccessDataResult<GetRentalResponse>(response,"GET.BY.ID.RENTAL");
+	}
+	
+	private void checkIfCorporateCustomer(int id) {
+		CorporateCustomer corporateCustomer = corporateCustomerRepository.findById(id);
+		if(corporateCustomer == null) throw new BusinessException("CORPORATE.CUSTOMER.NOT.FOUND");
+	}
+	
+	private void checkIfIndividualCustomer(int id) {
+		IndividualCustomer individualCustomer = individualCustomerRepository.findById(id);
+		if(individualCustomer == null) throw new BusinessException("INDIVIDUAL.CUSTOMER.NOT.FOUND");
 	}
 	
 	private void checkIfCar(int id) {
@@ -178,8 +270,9 @@ public class RentalManager implements RentalService{
 	private void ifEqualFindexScore(int carScore, String nationalIdentity) {
 		int userScore = findexCheckService.checkFindexScore(nationalIdentity);
 		if(userScore < carScore) {
-			throw new BusinessException("KULLANICI.FINDEX.SCORU.DÜŞÜK");
+			throw new BusinessException("KULLANICI.FINDEX.SKORU.DÜŞÜK");
 		}
 	}
+
 	
 }

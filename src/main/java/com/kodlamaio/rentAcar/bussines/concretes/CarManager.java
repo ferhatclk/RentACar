@@ -20,8 +20,10 @@ import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.BrandRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.CarRepository;
+import com.kodlamaio.rentAcar.dataAccess.abstracts.ColorRepository;
 import com.kodlamaio.rentAcar.entities.concretes.Brand;
 import com.kodlamaio.rentAcar.entities.concretes.Car;
+import com.kodlamaio.rentAcar.entities.concretes.Color;
 
 @Service
 public class CarManager implements CarService{
@@ -32,18 +34,22 @@ public class CarManager implements CarService{
 	
 	private BrandRepository brandRepository;
 	
+	private ColorRepository colorRepository;
+	
 	@Autowired
 	public CarManager(CarRepository carRepository,ModelMapperService modelMapperService,
-			BrandRepository brandRepository) {
+			BrandRepository brandRepository, ColorRepository colorRepository) {
 		this.carRepository = carRepository;
 		this.modelMapperService = modelMapperService;
 		this.brandRepository = brandRepository;
+		this.colorRepository = colorRepository;
 	}
 	
 	@Override
 	public Result add(CreateCarRequest createCarRequest) {
 		checkIfBrand(createCarRequest.getBrandId());
 		checkIfExistCount(createCarRequest.getBrandId());
+		checkIfColor(createCarRequest.getColorId());
 		Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
 		car.setState(1);
 		this.carRepository.save(car);
@@ -64,6 +70,9 @@ public class CarManager implements CarService{
 
 	@Override
 	public Result update(UpdateCarRequest updateCarRequest) {
+		checkIfCar(updateCarRequest.getId());
+		checkIfColor(updateCarRequest.getColorId());
+		checkIfBrand(updateCarRequest.getBrandId());
 		Car car = this.modelMapperService.forRequest().map(updateCarRequest, Car.class);
 		car.setState(1);
 		carRepository.save(car);
@@ -97,6 +106,11 @@ public class CarManager implements CarService{
 		if(brand == null) {
 			throw new BusinessException("BRAND.NOT.FOUND!!!");
 		}
+	}
+	
+	private void checkIfColor(int id) {
+		Color color = colorRepository.findById(id);
+		if(color == null) throw new BusinessException("BRAND.NOT.FOUND!!!");
 	}
 	
 	private void checkIfCar(int id) {

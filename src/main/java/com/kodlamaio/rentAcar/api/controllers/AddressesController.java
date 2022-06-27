@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kodlamaio.rentAcar.bussines.abstracts.AddressService;
-import com.kodlamaio.rentAcar.bussines.request.addresses.CreateAddressRequest;
-import com.kodlamaio.rentAcar.bussines.request.addresses.DeleteAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.CreateCorporateCustomerAddressRequet;
+import com.kodlamaio.rentAcar.bussines.request.addresses.CreateIndividualCustomerAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.DeleteCorporateCustomerAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.DeleteIndividualCustomerAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateBillingAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateContactAddressRequest;
 import com.kodlamaio.rentAcar.bussines.response.address.GetAllAddressResponse;
@@ -30,14 +32,24 @@ public class AddressesController {
 		this.addressService = addressService;
 	}
 
-	@PostMapping("add")
-	public Result add(@RequestBody CreateAddressRequest createAddressRequest) {
-		return addressService.add(createAddressRequest);
+	@PostMapping("addIndividualCustomerAddress")
+	public Result addIndividualCustomerAddress(@RequestBody CreateIndividualCustomerAddressRequest createIndividualCustomerAddressRequest) {
+		return addressService.addIndividualCustomerAddress(createIndividualCustomerAddressRequest);
 	}
 	
-	@PostMapping("delete")
-	public Result delete(DeleteAddressRequest deleteAddressRequest) {
-		return addressService.delete(deleteAddressRequest);
+	@PostMapping("addCorporateCustomerAddress")
+	public Result addCorporateCustomerAddress(@RequestBody CreateCorporateCustomerAddressRequet createCorporateCustomerAddressRequet) {
+		return addressService.addCorporateCustomerAddress(createCorporateCustomerAddressRequet);
+	}
+	
+	@PostMapping("deleteIndividualCustomerAddress")
+	public Result deleteIndividualCustomerAddress(DeleteIndividualCustomerAddressRequest deleteIndividualCustomerAddressRequest) {
+		return addressService.deleteIndividualCustomerAddress(deleteIndividualCustomerAddressRequest);
+	}
+	
+	@PostMapping("deleteCorporateCustomerAddress")
+	public Result deleteCorporateCustomerAddress(DeleteCorporateCustomerAddressRequest deleteCorporateCustomerAddressRequest) {
+		return addressService.deleteCorporateCustomerAddress(deleteCorporateCustomerAddressRequest);
 	}
 	
 	@PostMapping("updateContactAddress")

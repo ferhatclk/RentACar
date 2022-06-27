@@ -1,4 +1,4 @@
-package com.kodlamaio.rentAcar.bussines.request.rentals;
+package com.kodlamaio.rentAcar.bussines.request.addresses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeleteRentalRequest {
+public class DeleteCorporateCustomerAddressRequest {
 	private int id;
 }

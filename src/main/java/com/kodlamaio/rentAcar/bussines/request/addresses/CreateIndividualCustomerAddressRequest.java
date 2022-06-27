@@ -1,4 +1,6 @@
-package com.kodlamaio.rentAcar.bussines.response.address;
+package com.kodlamaio.rentAcar.bussines.request.addresses;
+
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,9 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetByIdAddressResponse {
-	private int id;
+public class CreateIndividualCustomerAddressRequest {
+	@NotNull
 	private String contactAddress;
+
 	private String billingAddress;
 	private int customerId;
 }

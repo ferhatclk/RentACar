@@ -69,6 +69,7 @@ public class OrderedAdditionalItemManager implements OrderedAdditionalItemServic
 
 	@Override
 	public Result update(UpdateOrderedAdditionalItemRequest updateAdditionalRequest) {
+		checkIfAdditionalItem(updateAdditionalRequest.getAdditionalItemId());
 		AdditionalItem additionalItem = additionalItemRepository.findById(updateAdditionalRequest.getAdditionalItemId());
 		OrderedAdditionalItem additional = modelMapperService.forRequest().map(updateAdditionalRequest, OrderedAdditionalItem.class);
 		Rental rental = rentalRepository.findById(updateAdditionalRequest.getRentalId());

@@ -18,4 +18,5 @@ public class GetAllRentalsResponse {
 	private int pickUpCityId;
 	private int returnCityId;
 	private int carId;
+	private int customerId;
 }
