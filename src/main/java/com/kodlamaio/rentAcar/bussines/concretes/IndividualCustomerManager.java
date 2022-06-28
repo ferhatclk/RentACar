@@ -51,15 +51,15 @@ public class IndividualCustomerManager implements IndividualCustomerService{
 
 	@Override
 	public Result delete(DeleteIndividualCustomerRequest deleteIndividualCustomerRequest) {
+		checkIfIndividualCustomer(deleteIndividualCustomerRequest.getIndividualCustomerId());
 		individualCustomerRepository.deleteById(deleteIndividualCustomerRequest.getIndividualCustomerId());
 		return new SuccessResult("INDIVIDUAL.DELETED");
 	}
 
 	@Override
 	public Result update(UpdateIndividualCustomerRequest updateIndividualCustomerRequest) {
-//		IndividualCustomer individualCustomer = individualCustomerRepository.findById(updateIndividualCustomerRequest.getIndividualCustomerId());
+		checkIfIndividualCustomer(updateIndividualCustomerRequest.getIndividualCustomerId());
 		IndividualCustomer individualCustomer = this.modelMapperService.forRequest().map(updateIndividualCustomerRequest, IndividualCustomer.class);
-//		user.setNationalIdentity(individualCustomer.getNationalIdentity());
 		this.individualCustomerRepository.save(individualCustomer);
 		return new SuccessResult("INDIVIDUAL.UPDATE");
 	}
@@ -86,10 +86,17 @@ public class IndividualCustomerManager implements IndividualCustomerService{
 
 	@Override
 	public DataResult<GetByIdIndividualCustomerResponse> getById(int id) {
+		checkIfIndividualCustomer(id);
 		IndividualCustomer user = individualCustomerRepository.findById(id);
 		GetByIdIndividualCustomerResponse response = modelMapperService.forResponse().map(user, GetByIdIndividualCustomerResponse.class);
 		
 		return new SuccessDataResult<GetByIdIndividualCustomerResponse>(response);
+	}
+	
+	@Override
+	public IndividualCustomer getByCustomerId(int id) {
+		checkIfIndividualCustomer(id);
+		return individualCustomerRepository.findById(id);
 	}
 	
 	private void checkIfPerson(IndividualCustomer user) throws NumberFormatException, RemoteException {
@@ -98,6 +105,10 @@ public class IndividualCustomerManager implements IndividualCustomerService{
 		}
 	}
 	
+	private void checkIfIndividualCustomer(int id) {
+		IndividualCustomer individualCustomer = individualCustomerRepository.findById(id);
+		if(individualCustomer == null) throw new BusinessException("INDIVIDUAL.CUSTOMER.NOT.FOUND");
+	}
 	
 	private void notRepeatNationalIdentity(String nationalIdentity) {
 		IndividualCustomer user = individualCustomerRepository.findByNationalIdentity(nationalIdentity);
@@ -105,4 +116,5 @@ public class IndividualCustomerManager implements IndividualCustomerService{
 			throw new BusinessException("USER.EXİST.!!!");
 		}
 	}
+
 }

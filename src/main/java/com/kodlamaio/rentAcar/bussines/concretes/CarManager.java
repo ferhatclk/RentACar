@@ -71,6 +71,7 @@ public class CarManager implements CarService{
 	@Override
 	public Result update(UpdateCarRequest updateCarRequest) {
 		checkIfCar(updateCarRequest.getId());
+		checkIfExistCount(updateCarRequest.getBrandId());
 		checkIfColor(updateCarRequest.getColorId());
 		checkIfBrand(updateCarRequest.getBrandId());
 		Car car = this.modelMapperService.forRequest().map(updateCarRequest, Car.class);
@@ -94,8 +95,14 @@ public class CarManager implements CarService{
 		return new SuccessDataResult<GetByIdCarResponse>(response,"CAR.GET.ID");
 	}
 	
+	@Override
+	public Car getByCarId(int id) {
+		checkIfCar(id);
+		return carRepository.findById(id);
+	}
+	
 	private void checkIfExistCount(int id) {
-		List<Car> cars = carRepository.getByBrandId(id);
+		List<Car> cars = carRepository.findByBrandId(id);
 		if(cars.size() > 4) {
 			throw new BusinessException("CAR.EXIST");
 		}
@@ -123,4 +130,5 @@ public class CarManager implements CarService{
 			throw new BusinessException("CAR.NOT.DELETE!!!");
 		}
 	}
+
 }

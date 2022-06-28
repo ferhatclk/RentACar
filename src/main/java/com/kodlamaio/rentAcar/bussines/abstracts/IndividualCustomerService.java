@@ -10,6 +10,7 @@ import com.kodlamaio.rentAcar.bussines.response.individualCustomers.GetAllIndivi
 import com.kodlamaio.rentAcar.bussines.response.individualCustomers.GetByIdIndividualCustomerResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
+import com.kodlamaio.rentAcar.entities.concretes.IndividualCustomer;
 
 public interface IndividualCustomerService {
 	Result add(CreateIndividualCustomerRequest createIndividualCustomerRequest) throws NumberFormatException, RemoteException;;
@@ -18,4 +19,5 @@ public interface IndividualCustomerService {
 	DataResult<List<GetAllIndividualCustomersResponse>> getAll();
 	DataResult<List<GetAllIndividualCustomersResponse>> getAll(int pageNo, int pageSize);
 	DataResult<GetByIdIndividualCustomerResponse> getById(int id);
+	IndividualCustomer getByCustomerId(int id);
 }

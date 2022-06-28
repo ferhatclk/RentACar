@@ -11,6 +11,7 @@ import com.kodlamaio.rentAcar.bussines.request.corporateCustomers.DeleteCorporat
 import com.kodlamaio.rentAcar.bussines.request.corporateCustomers.UpdateCorporateCustomerRequest;
 import com.kodlamaio.rentAcar.bussines.response.corporateCustomers.GetAllCorporateCustomersResponse;
 import com.kodlamaio.rentAcar.bussines.response.corporateCustomers.GetByIdCorporateCustomerResponse;
+import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
@@ -32,6 +33,7 @@ public class CorporateCustomerManager implements CorporateCustomerService{
 
 	@Override
 	public Result add(CreateCorporateCustomerRequest createCorporateCustomerRequet) {
+		checkIfCorporateCustomerName(createCorporateCustomerRequet.getCorporateCustomerName());
 		CorporateCustomer corporateCustomer = modelMapperService.forRequest().map(createCorporateCustomerRequet, CorporateCustomer.class);
 		corporateCustomerRepository.save(corporateCustomer);
 		return new SuccessResult("CORPORATE.CUSTOMER.ADDED");
@@ -39,6 +41,7 @@ public class CorporateCustomerManager implements CorporateCustomerService{
 
 	@Override
 	public Result delete(DeleteCorporateCustomerRequest deleteCorporateCustomerRequest) {
+		checkIfCorporateCustomer(deleteCorporateCustomerRequest.getCorporateCustomerId());
 		CorporateCustomer corporateCustomer = corporateCustomerRepository.findById(deleteCorporateCustomerRequest.getCorporateCustomerId());
 		corporateCustomerRepository.delete(corporateCustomer);
 		return new SuccessResult("CORPORATE.CUSTOMER.DELETED");
@@ -46,6 +49,7 @@ public class CorporateCustomerManager implements CorporateCustomerService{
 
 	@Override
 	public Result update(UpdateCorporateCustomerRequest updateCorporateCustomerRequest) {
+		checkIfCorporateCustomer(updateCorporateCustomerRequest.getCorporateCustomerId());
 		CorporateCustomer corporateCustomer = modelMapperService.forRequest().map(updateCorporateCustomerRequest, CorporateCustomer.class);
 		corporateCustomerRepository.save(corporateCustomer);
 		return new SuccessResult("CORPORATE.CUSTOMER.UPDATED");
@@ -61,9 +65,27 @@ public class CorporateCustomerManager implements CorporateCustomerService{
 
 	@Override
 	public DataResult<GetByIdCorporateCustomerResponse> getById(int id) {
+		checkIfCorporateCustomer(id);
 		CorporateCustomer corporateCustomer = corporateCustomerRepository.findById(id);
 		GetByIdCorporateCustomerResponse response = modelMapperService.forResponse().map(corporateCustomer, GetByIdCorporateCustomerResponse.class);
 		return new SuccessDataResult<GetByIdCorporateCustomerResponse>(response);
+	}
+	
+	@Override
+	public CorporateCustomer getByCustomerId(int id) {
+		checkIfCorporateCustomer(id);
+		return corporateCustomerRepository.findById(id);
+	}
+	
+	
+	private void checkIfCorporateCustomerName(String name) {
+		CorporateCustomer corporateCustomer = corporateCustomerRepository.findByCorporateCustomerName(name);
+		if(corporateCustomer !=null) throw new BusinessException("CORPORATE.CUSTOMER.EXİST");
+	}
+	
+	private void checkIfCorporateCustomer(int id) {
+		CorporateCustomer corporateCustomer = corporateCustomerRepository.findById(id);
+		if(corporateCustomer == null) throw new BusinessException("CORPORATE.CUSTOMER.NOT.FOUND");
 	}
 
 }

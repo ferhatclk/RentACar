@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodlamaio.rentAcar.bussines.abstracts.AddressService;
+import com.kodlamaio.rentAcar.bussines.abstracts.CorporateCustomerService;
+import com.kodlamaio.rentAcar.bussines.abstracts.IndividualCustomerService;
 import com.kodlamaio.rentAcar.bussines.request.addresses.CreateCorporateCustomerAddressRequet;
 import com.kodlamaio.rentAcar.bussines.request.addresses.CreateIndividualCustomerAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.DeleteCorporateCustomerAddressRequest;
@@ -22,8 +24,6 @@ import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.AddressRepository;
-import com.kodlamaio.rentAcar.dataAccess.abstracts.CorporateCustomerRepository;
-import com.kodlamaio.rentAcar.dataAccess.abstracts.IndividualCustomerRepository;
 import com.kodlamaio.rentAcar.entities.concretes.Address;
 import com.kodlamaio.rentAcar.entities.concretes.CorporateCustomer;
 import com.kodlamaio.rentAcar.entities.concretes.IndividualCustomer;
@@ -35,17 +35,17 @@ public class AddressManager implements AddressService{
 
 	private ModelMapperService modelMapperService;
 	
-	private IndividualCustomerRepository individualCustomerRepository;
-	private CorporateCustomerRepository corporateCustomerRepository;
+	private IndividualCustomerService individualCustomerService;
+	private CorporateCustomerService corporateCustomerService;
 	
 	@Autowired
 	public AddressManager(AddressRepository addressRepository, ModelMapperService modelMapperService,
-			IndividualCustomerRepository individualCustomerRepository, CorporateCustomerRepository corporateCustomerRepository) {
+			IndividualCustomerService individualCustomerService, CorporateCustomerService corporateCustomerService) {
 		
 		this.addressRepository = addressRepository;
 		this.modelMapperService = modelMapperService;
-		this.individualCustomerRepository = individualCustomerRepository;
-		this.corporateCustomerRepository = corporateCustomerRepository;
+		this.individualCustomerService = individualCustomerService;
+		this.corporateCustomerService = corporateCustomerService;
 	}
 
 	@Override
@@ -75,8 +75,7 @@ public class AddressManager implements AddressService{
 	}
 	
 	@Override
-	public Result deleteCorporateCustomerAddress(
-			DeleteCorporateCustomerAddressRequest deleteCorporateCustomerAddressRequest) {
+	public Result deleteCorporateCustomerAddress(DeleteCorporateCustomerAddressRequest deleteCorporateCustomerAddressRequest) {
 		addressRepository.deleteById(deleteCorporateCustomerAddressRequest.getId());
 		return new SuccessResult("ADDRESS.DELETED");
 	}
@@ -121,16 +120,16 @@ public class AddressManager implements AddressService{
 	}
 	
 	private void checkIfIndividualCustomer(int id) {
-		IndividualCustomer user = individualCustomerRepository.findById(id);
-		if(user == null) {
-			throw new BusinessException("USER.NOT.FOUND!!!");
+		IndividualCustomer individualCustomer = individualCustomerService.getByCustomerId(id);
+		if(individualCustomer == null) {
+			throw new BusinessException("INDIVIDUAL.CUSTOMER.NOT.FOUND!!!");
 		}
 	}
 	
 	private void checkIfCorporateCustomer(int id) {
-		CorporateCustomer user = corporateCustomerRepository.findById(id);
-		if(user == null) {
-			throw new BusinessException("USER.NOT.FOUND!!!");
+		CorporateCustomer corporateCustomer = corporateCustomerService.getByCustomerId(id);
+		if(corporateCustomer == null) {
+			throw new BusinessException("CORPORATE.CUSTOMER.NOT.FOUND!!!");
 		}
 	}
 

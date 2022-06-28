@@ -21,8 +21,8 @@ import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.AdditionalItemRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.OrderedAdditionalItemRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.RentalRepository;
-import com.kodlamaio.rentAcar.entities.concretes.OrderedAdditionalItem;
 import com.kodlamaio.rentAcar.entities.concretes.AdditionalItem;
+import com.kodlamaio.rentAcar.entities.concretes.OrderedAdditionalItem;
 import com.kodlamaio.rentAcar.entities.concretes.Rental;
 
 @Service
@@ -30,17 +30,17 @@ public class OrderedAdditionalItemManager implements OrderedAdditionalItemServic
 	
 	private ModelMapperService modelMapperService;
 
-	private OrderedAdditionalItemRepository additionalRepository;
+	private OrderedAdditionalItemRepository orderedAdditionalItemRepository;
 
 	private RentalRepository rentalRepository;
 
 	private AdditionalItemRepository additionalItemRepository;
 
 	@Autowired
-	public OrderedAdditionalItemManager(ModelMapperService modelMapperService, OrderedAdditionalItemRepository additionalRepository,
+	public OrderedAdditionalItemManager(ModelMapperService modelMapperService, OrderedAdditionalItemRepository orderedAdditionalItemRepository,
 			RentalRepository rentalRepository, AdditionalItemRepository additionalItemRepository) {
 		this.modelMapperService = modelMapperService;
-		this.additionalRepository = additionalRepository;
+		this.orderedAdditionalItemRepository = orderedAdditionalItemRepository;
 		this.rentalRepository = rentalRepository;
 		this.additionalItemRepository = additionalItemRepository;
 	}
@@ -57,13 +57,13 @@ public class OrderedAdditionalItemManager implements OrderedAdditionalItemServic
 		double price = additionalItem.getPrice();
 		additional.setTotalPrice(additional.getDays() * price);
 			
-		additionalRepository.save(additional);
+		orderedAdditionalItemRepository.save(additional);
 		return new SuccessResult("ADDITIONAL.ADDED");
 	}
 
 	@Override
 	public Result delete(DeleteOrderedAdditionalItemRequest deleteAdditionalRequest) {
-		additionalRepository.deleteById(deleteAdditionalRequest.getId());
+		orderedAdditionalItemRepository.deleteById(deleteAdditionalRequest.getId());
 		return new SuccessResult("ADDITIONAL.DELETED");
 	}
 
@@ -78,13 +78,13 @@ public class OrderedAdditionalItemManager implements OrderedAdditionalItemServic
 		
 		additional.setTotalPrice(additional.getDays() * additionalItem.getPrice());		
 		
-		additionalRepository.save(additional);
+		orderedAdditionalItemRepository.save(additional);
 		return new SuccessResult("ADDITIONAL.UPDATED");
 	}
 
 	@Override
 	public DataResult<List<GetAllOrderedAdditionalItemsResponse>> getAll() {
-		List<OrderedAdditionalItem> additionals = this.additionalRepository.findAll();
+		List<OrderedAdditionalItem> additionals = this.orderedAdditionalItemRepository.findAll();
 		List<GetAllOrderedAdditionalItemsResponse> response = additionals.stream().map(additional -> this.modelMapperService.forResponse()
 				.map(additional, GetAllOrderedAdditionalItemsResponse.class)).collect(Collectors.toList());
 		
@@ -93,14 +93,21 @@ public class OrderedAdditionalItemManager implements OrderedAdditionalItemServic
 
 	@Override
 	public DataResult<GetByIdOrderedAdditionalItemResponse> getById(int id) {
-		OrderedAdditionalItem additional = additionalRepository.findById(id);
+		OrderedAdditionalItem additional = orderedAdditionalItemRepository.findById(id);
 		GetByIdOrderedAdditionalItemResponse response = modelMapperService.forResponse().map(additional, GetByIdOrderedAdditionalItemResponse.class);
 		
 		return new SuccessDataResult<GetByIdOrderedAdditionalItemResponse>(response);
+	}
+	
+	@Override
+	public OrderedAdditionalItem getByOrderedAdditionalItemId(int id) {
+		checkIfAdditionalItem(id);
+		return orderedAdditionalItemRepository.findById(id);
 	}
 	
 	private void checkIfAdditionalItem(int id) {
 		AdditionalItem additionalItem = additionalItemRepository.findById(id);
 		if(additionalItem == null) throw new BusinessException("ADDITIONAL.ITEM.NOT.FOUND!!!");
 	}
+
 }

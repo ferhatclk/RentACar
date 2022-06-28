@@ -3,6 +3,7 @@ package com.kodlamaio.rentAcar.entities.concretes;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -57,8 +58,8 @@ public class Rental {
 	@JoinColumn(name = "customer_id")
 	private Customer customer;
 	
-	@OneToMany(mappedBy = "rental")
-	List<OrderedAdditionalItem> additionals;
+	@OneToMany(mappedBy = "rental", cascade=CascadeType.REMOVE)
+	List<OrderedAdditionalItem> orderedAdditionalItems;
 	
 	@OneToOne(mappedBy = "rental")
 	private Invoice invoice;

@@ -9,6 +9,7 @@ import com.kodlamaio.rentAcar.bussines.response.orderedAdditionalItem.GetAllOrde
 import com.kodlamaio.rentAcar.bussines.response.orderedAdditionalItem.GetByIdOrderedAdditionalItemResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
+import com.kodlamaio.rentAcar.entities.concretes.OrderedAdditionalItem;
 
 public interface OrderedAdditionalItemService {
 	Result add(CreateOrderedAdditionalItemRequest createAdditionalRequest);
@@ -16,4 +17,5 @@ public interface OrderedAdditionalItemService {
 	Result update(UpdateOrderedAdditionalItemRequest updateAdditionalRequest);
 	DataResult<List<GetAllOrderedAdditionalItemsResponse>> getAll();
 	DataResult<GetByIdOrderedAdditionalItemResponse> getById(int id);
+	OrderedAdditionalItem getByOrderedAdditionalItemId(int id);
 }
