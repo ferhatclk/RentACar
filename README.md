@@ -1,6 +1,6 @@
  <h2 align="center"> Rent A Car Project </h2>
  <p align="center">
- <img align="center" src="https://github.com/ferhatclk/RentACar/blob/Main/img/rent-car-logo-professional.jpg" />
+ <img align="center" src="https://github.com/ferhatclk/RentACar/blob/Main/img/rent-car-logo-.jpg" />
  </p>
 
  <p align="center"> Rent A Car Backend Project is a demo built with Spring Boot. </p>
