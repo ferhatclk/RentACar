@@ -17,8 +17,10 @@ import com.kodlamaio.rentAcar.bussines.request.rentals.DeleteCorporateCustomerRe
 import com.kodlamaio.rentAcar.bussines.request.rentals.DeleteIndividualCustomerRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.UpdateCorporateCustomerRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.UpdateIndividualCustomerRentalRequest;
-import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllRentalsResponse;
-import com.kodlamaio.rentAcar.bussines.response.rentals.GetRentalResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllCorporateCustomerRentalsResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllIndividualCustomerRentalsResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetByIdCorporateCustomerRentalResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetByIdIndividualCustomerRentalResponse;
 import com.kodlamaio.rentAcar.core.services.findex.FindexCheckService;
 import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
@@ -60,10 +62,12 @@ public class RentalManager implements RentalService {
 
 	@Override
 	public Result addForIndividual(CreateIndividualCustomerRentalRequest createIndividualCustomerRentalRequest) {
-		checkIfCar(createIndividualCustomerRentalRequest.getCarId());
+//		checkIfCar(createIndividualCustomerRentalRequest.getCarId());
 		checkIfState(createIndividualCustomerRentalRequest.getCarId());
 		checkIfDate(createIndividualCustomerRentalRequest.getPickupDate(), createIndividualCustomerRentalRequest.getReturnDate());
-		checkIfIndividualCustomer(createIndividualCustomerRentalRequest.getCustomerId());
+//		checkIfIndividualCustomer(createIndividualCustomerRentalRequest.getCustomerId());
+		IndividualCustomer individualCustomer = individualCustomerService.getByCustomerId(createIndividualCustomerRentalRequest.getCustomerId());
+		Car car = carService.getByCarId(createIndividualCustomerRentalRequest.getCarId());
 		Rental rental = this.modelMapperService.forRequest().map(createIndividualCustomerRentalRequest, Rental.class);
 
 		Date pickupDate = createIndividualCustomerRentalRequest.getPickupDate();
@@ -71,9 +75,7 @@ public class RentalManager implements RentalService {
 
 		long totalDays = dayDifference(pickupDate, returnDate);
 		rental.setTotalDays(totalDays);
-
-		Car car = carService.getByCarId(createIndividualCustomerRentalRequest.getCarId());
-		IndividualCustomer individualCustomer = individualCustomerService.getByCustomerId(createIndividualCustomerRentalRequest.getCustomerId());
+		
 
 		ifEqualFindexScore(car.getFindexScore(), individualCustomer.getNationalIdentity());
 		car.setState(3);
@@ -91,10 +93,11 @@ public class RentalManager implements RentalService {
 
 	@Override
 	public Result addForCorporate(CreateCorporateCustomerRentalRequest createCorporateCustomerRentalRequest) {
-		checkIfCar(createCorporateCustomerRentalRequest.getCarId());
+//		checkIfCar(createCorporateCustomerRentalRequest.getCarId());
 		checkIfState(createCorporateCustomerRentalRequest.getCarId());
 		checkIfDate(createCorporateCustomerRentalRequest.getPickupDate(), createCorporateCustomerRentalRequest.getReturnDate());
 		checkIfCorporateCustomer(createCorporateCustomerRentalRequest.getCustomerId());
+		Car car = carService.getByCarId(createCorporateCustomerRentalRequest.getCarId());
 		Rental rental = modelMapperService.forRequest().map(createCorporateCustomerRentalRequest, Rental.class);
 
 		Date pickupDate = createCorporateCustomerRentalRequest.getPickupDate();
@@ -103,11 +106,6 @@ public class RentalManager implements RentalService {
 		long totalDays = dayDifference(pickupDate, returnDate);
 		rental.setTotalDays(totalDays);
 		
-		
-		Car car = carService.getByCarId(createCorporateCustomerRentalRequest.getCarId());
-
-//		CorporateCustomer corporateCustomer = comporateCustomerRepository.findById(createRentalRequest.getCustomerId());
-//		ifEqualFindexScore(car.getFindexScore(), corporateCustomer.getCorporateCustomerTaxNumber());
 		car.setState(3);
 		rental.setCar(car);
 
@@ -122,7 +120,7 @@ public class RentalManager implements RentalService {
 
 	@Override
 	public Result deleteForCorporate(DeleteCorporateCustomerRentalRequest deleteCorporateCustomerRentalRequest) {
-
+		checkIfRental(deleteCorporateCustomerRentalRequest.getId());
 		Rental rental = rentalRepository.findById(deleteCorporateCustomerRentalRequest.getId());
 		Car car = rental.getCar();
 		car.setState(1);
@@ -133,6 +131,7 @@ public class RentalManager implements RentalService {
 
 	@Override
 	public Result deleteForIndividual(DeleteIndividualCustomerRentalRequest deleteIndividualCustomerRentalRequest) {
+		checkIfRental(deleteIndividualCustomerRentalRequest.getId());
 		Rental rental = rentalRepository.findById(deleteIndividualCustomerRentalRequest.getId());
 		Car car = carService.getByCarId(rental.getCar().getId());
 		car.setState(1);
@@ -144,18 +143,19 @@ public class RentalManager implements RentalService {
 	@Override
 	public Result updateForIndividual(UpdateIndividualCustomerRentalRequest updateIndividualCustomerRentalRequest) {
 		checkIfRental(updateIndividualCustomerRentalRequest.getId());
-		checkIfIndividualCustomer(updateIndividualCustomerRentalRequest.getCustomerId());
+//		checkIfIndividualCustomer(updateIndividualCustomerRentalRequest.getCustomerId());
 		checkIfState(updateIndividualCustomerRentalRequest.getCarId());
 		stateCar(updateIndividualCustomerRentalRequest.getId());
 		checkIfDate(updateIndividualCustomerRentalRequest.getPickupDate(), updateIndividualCustomerRentalRequest.getReturnDate());
+		IndividualCustomer individualCustomer = individualCustomerService
+				.getByCustomerId(updateIndividualCustomerRentalRequest.getCustomerId());
 		Rental rental = this.modelMapperService.forRequest().map(updateIndividualCustomerRentalRequest, Rental.class);
 
 		Car car = carService.getByCarId(updateIndividualCustomerRentalRequest.getCarId());
 		car.setState(3);
 		rental.setCar(car);
 
-		IndividualCustomer individualCustomer = individualCustomerService
-				.getByCustomerId(updateIndividualCustomerRentalRequest.getCustomerId());
+		
 		ifEqualFindexScore(car.getFindexScore(), individualCustomer.getNationalIdentity());
 
 		Date pickDate = updateIndividualCustomerRentalRequest.getPickupDate();
@@ -206,22 +206,42 @@ public class RentalManager implements RentalService {
 		return new SuccessResult("RENTAL.UPDATED.FOR.CORPORATE");
 
 	}
-
+	
+	
 	@Override
-	public DataResult<List<GetAllRentalsResponse>> getAll() {
+	public DataResult<List<GetAllIndividualCustomerRentalsResponse>> getAllForIndividualRentals() {
 		List<Rental> rentals = this.rentalRepository.findAll();
-		List<GetAllRentalsResponse> response = rentals.stream()
-				.map(rental -> this.modelMapperService.forResponse().map(rental, GetAllRentalsResponse.class))
+		List<GetAllIndividualCustomerRentalsResponse> response = rentals.stream()
+				.map(rental -> this.modelMapperService.forResponse().map(rental, GetAllIndividualCustomerRentalsResponse.class))
 				.collect(Collectors.toList());
-		return new SuccessDataResult<List<GetAllRentalsResponse>>(response);
+		return new SuccessDataResult<List<GetAllIndividualCustomerRentalsResponse>>(response);
 	}
 
 	@Override
-	public DataResult<GetRentalResponse> getById(int id) {
-		Rental rental = this.rentalRepository.findById(id);
-		GetRentalResponse response = this.modelMapperService.forResponse().map(rental, GetRentalResponse.class);
-		return new SuccessDataResult<GetRentalResponse>(response, "GET.BY.ID.RENTAL");
+	public DataResult<List<GetAllCorporateCustomerRentalsResponse>> getAllForCorporateRentals() {
+		List<Rental> rentals = this.rentalRepository.findAll();
+		List<GetAllCorporateCustomerRentalsResponse> response = rentals.stream()
+				.map(rental -> this.modelMapperService.forResponse().map(rental, GetAllCorporateCustomerRentalsResponse.class))
+				.collect(Collectors.toList());
+		return new SuccessDataResult<List<GetAllCorporateCustomerRentalsResponse>>(response);
 	}
+
+	@Override
+	public DataResult<GetByIdIndividualCustomerRentalResponse> getByIdForIndividualRental(int id) {
+		checkIfRental(id);
+		Rental rental = this.rentalRepository.findById(id);
+		GetByIdIndividualCustomerRentalResponse response = this.modelMapperService.forResponse().map(rental, GetByIdIndividualCustomerRentalResponse.class);
+		return new SuccessDataResult<GetByIdIndividualCustomerRentalResponse>(response, "GET.BY.ID.RENTAL");
+	}
+
+	@Override
+	public DataResult<GetByIdCorporateCustomerRentalResponse> getByIdForCorporateRental(int id) {
+		checkIfRental(id);
+		Rental rental = this.rentalRepository.findById(id);
+		GetByIdCorporateCustomerRentalResponse response = this.modelMapperService.forResponse().map(rental, GetByIdCorporateCustomerRentalResponse.class);
+		return new SuccessDataResult<GetByIdCorporateCustomerRentalResponse>(response, "GET.BY.ID.RENTAL");
+	}
+	
 	
 	@Override
 	public Rental getByRentalId(int id) {
@@ -240,17 +260,17 @@ public class RentalManager implements RentalService {
 			throw new BusinessException("CORPORATE.CUSTOMER.NOT.FOUND");
 	}
 
-	private void checkIfIndividualCustomer(int id) {
-		IndividualCustomer individualCustomer = individualCustomerService.getByCustomerId(id);
-		if (individualCustomer == null)
-			throw new BusinessException("INDIVIDUAL.CUSTOMER.NOT.FOUND");
-	}
+//	private void checkIfIndividualCustomer(int id) {
+//		IndividualCustomer individualCustomer = individualCustomerService.getByCustomerId(id);
+//		if (individualCustomer == null)
+//			throw new BusinessException("INDIVIDUAL.CUSTOMER.NOT.FOUND");
+//	}
 
-	private void checkIfCar(int id) {
-		Car car = carService.getByCarId(id);
-		if (car == null)
-			throw new BusinessException("CAR.NOT.FOUND!!");
-	}
+//	private void checkIfCar(int id) {
+//		Car car = carService.getByCarId(id);
+//		if (car == null)
+//			throw new BusinessException("CAR.NOT.FOUND!!");
+//	}
 
 	private void checkIfState(int id) {
 		Car car = carService.getByCarId(id);
@@ -292,5 +312,6 @@ public class RentalManager implements RentalService {
 			throw new BusinessException("KULLANICI.FINDEX.SKORU.DÜŞÜK");
 		}
 	}
+
 
 }

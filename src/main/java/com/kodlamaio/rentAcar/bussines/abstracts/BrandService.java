@@ -9,6 +9,7 @@ import com.kodlamaio.rentAcar.bussines.response.brands.GetAllBrandsResponse;
 import com.kodlamaio.rentAcar.bussines.response.brands.GetByIdBrandResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
+import com.kodlamaio.rentAcar.entities.concretes.Brand;
 
 public interface BrandService {
 	Result add(CreateBrandRequest createBrandRequest);
@@ -20,5 +21,7 @@ public interface BrandService {
 	DataResult<List<GetAllBrandsResponse>>  getAll();
 	
 	DataResult<GetByIdBrandResponse> getById(int id);
+	
+	Brand getByBrandId(int id);
 	
 }

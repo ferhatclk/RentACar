@@ -37,6 +37,7 @@ public class ColorManager implements ColorService{
 	
 	@Override
 	public Result add(CreateColorRequest createColorRequest) {
+		checkIfExistColorName(createColorRequest.getName());
 		Color color = this.modelMapperService.forRequest().map(createColorRequest, Color.class);
 		this.colorRepository.save(color);
 		return new SuccessResult("COLOR.ADDED");
@@ -71,9 +72,21 @@ public class ColorManager implements ColorService{
 		return new SuccessDataResult<GetByIdColorResponse>(response);
 	}
 	
+	@Override
+	public Color getByColorId(int id) {
+		checkIfColor(id);
+		return colorRepository.findById(id);
+	}
+	
 	private void checkIfColor(int id) {
 		Color color = colorRepository.findById(id);
 		if(color == null) throw new BusinessException("COLOR.NOT.FOUND");
 	}
+	
+	private void checkIfExistColorName(String name) {
+		Color color = colorRepository.findByName(name);
+		if(color != null) throw new BusinessException("COLOR.EXİST");
+	}
+
 
 }

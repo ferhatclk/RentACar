@@ -12,8 +12,10 @@ import com.kodlamaio.rentAcar.bussines.request.invoices.CreateAdditionalInvoiceR
 import com.kodlamaio.rentAcar.bussines.request.invoices.CreateRentalInvoiceRequest;
 import com.kodlamaio.rentAcar.bussines.request.invoices.DeleteAdditionalInvoiceRequest;
 import com.kodlamaio.rentAcar.bussines.request.invoices.DeleteRentalInvoiceRequest;
-import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllAdditionalInvoiceResponse;
-import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllRentalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllCorporateAdditionalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllCorporateRentalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllIndividualAdditionalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllIndividualRentalInvoicesResponse;
 import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
@@ -27,11 +29,10 @@ import com.kodlamaio.rentAcar.entities.concretes.Rental;
 
 @Service
 public class InvoiceManager implements InvoiceService{
-
+	
+	private InvoiceRepository invoiceRepository;
 	private ModelMapperService modelMapperService;
 
-	private InvoiceRepository invoiceRepository;
-	
 	private RentalService rentalService;
 	private OrderedAdditionalItemService orderedAdditionalItemService;
 
@@ -120,22 +121,41 @@ public class InvoiceManager implements InvoiceService{
 	}
 
 	@Override
-	public DataResult<List<GetAllRentalInvoicesResponse>> rentalGetAll() {
+	public DataResult<List<GetAllIndividualRentalInvoicesResponse>> getAllIndividualRentalInvoice() {
 		List<Invoice> invoices = this.invoiceRepository.findAll();
-        List<GetAllRentalInvoicesResponse> response =
+        List<GetAllIndividualRentalInvoicesResponse> response =
                 invoices.stream().map(invoice -> this.modelMapperService.forResponse()
-                        .map(invoice,GetAllRentalInvoicesResponse.class)).collect(Collectors.toList());    
-        return new SuccessDataResult<List<GetAllRentalInvoicesResponse>>(response);
+                        .map(invoice,GetAllIndividualRentalInvoicesResponse.class)).collect(Collectors.toList());    
+        return new SuccessDataResult<List<GetAllIndividualRentalInvoicesResponse>>(response);
 	}
 
 	@Override
-	public DataResult<List<GetAllAdditionalInvoiceResponse>> additionalGetAll() {
+	public DataResult<List<GetAllIndividualAdditionalInvoicesResponse>> getAllIndividualAdditionalInvoice() {
 		List<Invoice> invoices = this.invoiceRepository.findAll();
-        List<GetAllAdditionalInvoiceResponse> response =
+        List<GetAllIndividualAdditionalInvoicesResponse> response =
                 invoices.stream().map(invoice -> this.modelMapperService.forResponse()
-                        .map(invoice,GetAllAdditionalInvoiceResponse.class)).collect(Collectors.toList());    
-        return new SuccessDataResult<List<GetAllAdditionalInvoiceResponse>>(response);
+                        .map(invoice,GetAllIndividualAdditionalInvoicesResponse.class)).collect(Collectors.toList());    
+        return new SuccessDataResult<List<GetAllIndividualAdditionalInvoicesResponse>>(response);
 	}
+	
+	@Override
+	public DataResult<List<GetAllCorporateRentalInvoicesResponse>> getAllCorporateRentalInvoice() {
+		List<Invoice> invoices = this.invoiceRepository.findAll();
+        List<GetAllCorporateRentalInvoicesResponse> response =
+                invoices.stream().map(invoice -> this.modelMapperService.forResponse()
+                        .map(invoice,GetAllCorporateRentalInvoicesResponse.class)).collect(Collectors.toList());    
+        return new SuccessDataResult<List<GetAllCorporateRentalInvoicesResponse>>(response);
+	}
+
+	@Override
+	public DataResult<List<GetAllCorporateAdditionalInvoicesResponse>> getAllCorporateAdditionalInvoice() {
+		List<Invoice> invoices = this.invoiceRepository.findAll();
+        List<GetAllCorporateAdditionalInvoicesResponse> response =
+                invoices.stream().map(invoice -> this.modelMapperService.forResponse()
+                        .map(invoice,GetAllCorporateAdditionalInvoicesResponse.class)).collect(Collectors.toList());    
+        return new SuccessDataResult<List<GetAllCorporateAdditionalInvoicesResponse>>(response);
+	}
+	
 	
 	private void checkIfRental(int id) {
 		Rental rental = rentalService.getByRentalId(id);
@@ -151,6 +171,5 @@ public class InvoiceManager implements InvoiceService{
 		Invoice invoice = invoiceRepository.findById(id);
 		if(invoice == null) throw new BusinessException("INVOICE.NOT.FOUND");
 	}
-	
 
 }

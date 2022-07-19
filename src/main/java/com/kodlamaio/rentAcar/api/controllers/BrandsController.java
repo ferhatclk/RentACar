@@ -1,5 +1,6 @@
 package com.kodlamaio.rentAcar.api.controllers;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,4 +55,5 @@ public class BrandsController {
 	public DataResult<GetByIdBrandResponse> GetById(int id) {
 		return brandService.getById(id);
 	}
+	
 }

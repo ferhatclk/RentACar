@@ -13,8 +13,10 @@ import com.kodlamaio.rentAcar.bussines.request.addresses.CreateCorporateCustomer
 import com.kodlamaio.rentAcar.bussines.request.addresses.CreateIndividualCustomerAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.DeleteCorporateCustomerAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.DeleteIndividualCustomerAddressRequest;
-import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateBillingAddressRequest;
-import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateContactAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateCorporateCustomerBillingAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateCorporateCustomerContactAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateIndividualCustomerBillingAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateIndividualCustomerContactAddressRequest;
 import com.kodlamaio.rentAcar.bussines.response.address.GetAllAddressResponse;
 import com.kodlamaio.rentAcar.bussines.response.address.GetByIdAddressResponse;
 import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
@@ -58,7 +60,7 @@ public class AddressManager implements AddressService{
 		}
 		
 		addressRepository.save(address);
-		return new SuccessResult("ADDRESS.ADDED");
+		return new SuccessResult("INDIVIDUAL.CUSTOMER.ADDRESS.ADDED");
 	}
 	
 	@Override
@@ -71,36 +73,56 @@ public class AddressManager implements AddressService{
 		}
 		
 		addressRepository.save(address);
-		return new SuccessResult("ADDRESS.ADDED");
+		return new SuccessResult("CORPORATE.CUSTOMER.ADDRESS.ADDED");
 	}
 	
 	@Override
 	public Result deleteCorporateCustomerAddress(DeleteCorporateCustomerAddressRequest deleteCorporateCustomerAddressRequest) {
 		addressRepository.deleteById(deleteCorporateCustomerAddressRequest.getId());
-		return new SuccessResult("ADDRESS.DELETED");
+		return new SuccessResult("CORPORATE.CUSTOMER.ADDRESS.DELETED");
 	}
 
 
 	@Override
 	public Result deleteIndividualCustomerAddress(DeleteIndividualCustomerAddressRequest deleteIndividualCustomerAddressRequest) {
 		addressRepository.deleteById(deleteIndividualCustomerAddressRequest.getId());
-		return new SuccessResult("ADDRESS.DELETED");
+		return new SuccessResult("INDIVIDUAL.CUSTOMER.ADDRESS.DELETED");
 	}
 
 	@Override
-	public Result updateContactAddress(UpdateContactAddressRequest updateContactAddressRequest) {
-		Address address = addressRepository.findById(updateContactAddressRequest.getId());
-		address.setContactAddress(updateContactAddressRequest.getContactAddress());
+	public Result updateIndividualCustomerContactAddress(UpdateIndividualCustomerContactAddressRequest updateIndividualCustomerContactAddressRequest) {
+		Address address = addressRepository.findById(updateIndividualCustomerContactAddressRequest.getId());
+		address.setContactAddress(updateIndividualCustomerContactAddressRequest.getContactAddress());
 		addressRepository.save(address);
-		return new SuccessResult("CONTACT.ADDRESS.UPDATED");
+		return new SuccessResult("INDIVIDUAL.CUSTOMER.CONTACT.ADDRESS.UPDATED");
 	}
 
 	@Override
-	public Result updateBillingAddress(UpdateBillingAddressRequest updateBillingAddressRequest) {
-		Address address = addressRepository.findById(updateBillingAddressRequest.getId());
-		address.setContactAddress(updateBillingAddressRequest.getBillingAddress());
+	public Result updateIndividualCustomerBillingAddress(UpdateIndividualCustomerBillingAddressRequest updateIndividualCustomerBillingAddressRequest) {
+		Address address = addressRepository.findById(updateIndividualCustomerBillingAddressRequest.getId());
+		address.setContactAddress(updateIndividualCustomerBillingAddressRequest.getBillingAddress());
 		addressRepository.save(address);
-		return new SuccessResult("BILLING.ADDRESS.UPDATED");
+		return new SuccessResult("INDIVIDUAL.CUSTOMER.BILLING.ADDRESS.UPDATED");
+	}
+	
+	
+
+	@Override
+	public Result updateCorporateCustomerContactAddress(
+			UpdateCorporateCustomerContactAddressRequest updateCorporateCustomerContactAddressRequest) {
+		Address address = addressRepository.findById(updateCorporateCustomerContactAddressRequest.getId());
+		address.setContactAddress(updateCorporateCustomerContactAddressRequest.getContactAddress());
+		addressRepository.save(address);
+		return new SuccessResult("CORPORATE.CUSTOMER.CONTACT.ADDRESS.UPDATED");
+	}
+
+	@Override
+	public Result updateCorporateCustomerBillingAddress(
+			UpdateCorporateCustomerBillingAddressRequest updateCorporateCustomerBillingAddressRequest) {
+		Address address = addressRepository.findById(updateCorporateCustomerBillingAddressRequest.getId());
+		address.setContactAddress(updateCorporateCustomerBillingAddressRequest.getBillingAddress());
+		addressRepository.save(address);
+		return new SuccessResult("CORPORATE.CUSTOMER.BILLING.ADDRESS.UPDATED");
 	}
 
 	@Override

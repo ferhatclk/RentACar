@@ -74,6 +74,12 @@ public class BrandManager implements BrandService{
 		GetByIdBrandResponse response = modelMapperService.forResponse().map(brand, GetByIdBrandResponse.class);
 		return new SuccessDataResult<GetByIdBrandResponse>(response);
 	}
+	
+	@Override
+	public Brand getByBrandId(int id) {
+		checkIfBrand(id);
+		return brandRepository.findById(id);
+	}
 
 	private void checkIfBrand(int id) {
 		Brand brand = brandRepository.findById(id);

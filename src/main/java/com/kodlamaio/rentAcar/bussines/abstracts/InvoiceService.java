@@ -6,8 +6,10 @@ import com.kodlamaio.rentAcar.bussines.request.invoices.CreateAdditionalInvoiceR
 import com.kodlamaio.rentAcar.bussines.request.invoices.CreateRentalInvoiceRequest;
 import com.kodlamaio.rentAcar.bussines.request.invoices.DeleteAdditionalInvoiceRequest;
 import com.kodlamaio.rentAcar.bussines.request.invoices.DeleteRentalInvoiceRequest;
-import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllAdditionalInvoiceResponse;
-import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllRentalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllCorporateAdditionalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllCorporateRentalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllIndividualAdditionalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllIndividualRentalInvoicesResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 
@@ -24,8 +26,11 @@ public interface InvoiceService {
 	Result deleteForCorporateCustomerRentalInvoice(DeleteRentalInvoiceRequest deleteRentalInvoiceRequest);
 	Result deleteForCorporateCustomerAdditionalInvoice(DeleteAdditionalInvoiceRequest deleteAdditionalInvoiceRequest);
 	
-	DataResult<List<GetAllRentalInvoicesResponse>> rentalGetAll();
-	DataResult<List<GetAllAdditionalInvoiceResponse>> additionalGetAll();
+	DataResult<List<GetAllIndividualRentalInvoicesResponse>> getAllIndividualRentalInvoice();
+	DataResult<List<GetAllIndividualAdditionalInvoicesResponse>> getAllIndividualAdditionalInvoice();
+	
+	DataResult<List<GetAllCorporateRentalInvoicesResponse>> getAllCorporateRentalInvoice();
+	DataResult<List<GetAllCorporateAdditionalInvoicesResponse>> getAllCorporateAdditionalInvoice();
 	
 	
 }

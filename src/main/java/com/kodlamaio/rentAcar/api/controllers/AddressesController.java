@@ -14,8 +14,10 @@ import com.kodlamaio.rentAcar.bussines.request.addresses.CreateCorporateCustomer
 import com.kodlamaio.rentAcar.bussines.request.addresses.CreateIndividualCustomerAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.DeleteCorporateCustomerAddressRequest;
 import com.kodlamaio.rentAcar.bussines.request.addresses.DeleteIndividualCustomerAddressRequest;
-import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateBillingAddressRequest;
-import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateContactAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateCorporateCustomerBillingAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateCorporateCustomerContactAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateIndividualCustomerBillingAddressRequest;
+import com.kodlamaio.rentAcar.bussines.request.addresses.UpdateIndividualCustomerContactAddressRequest;
 import com.kodlamaio.rentAcar.bussines.response.address.GetAllAddressResponse;
 import com.kodlamaio.rentAcar.bussines.response.address.GetByIdAddressResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
@@ -52,14 +54,24 @@ public class AddressesController {
 		return addressService.deleteCorporateCustomerAddress(deleteCorporateCustomerAddressRequest);
 	}
 	
-	@PostMapping("updateContactAddress")
-	public Result updateContactAddress(@RequestBody UpdateContactAddressRequest updateContactAddressRequest) {
-		return addressService.updateContactAddress(updateContactAddressRequest);
+	@PostMapping("updateIndividualCustomerContactAddress")
+	public Result updateIndividualCustomerContactAddress(@RequestBody UpdateIndividualCustomerContactAddressRequest updateIndividualCustomerContactAddressRequest) {
+		return addressService.updateIndividualCustomerContactAddress(updateIndividualCustomerContactAddressRequest);
 	}
 	
-	@PostMapping("updateBillingAddress")
-	public Result updateBillingAddress(@RequestBody UpdateBillingAddressRequest updateBillingAddressRequest) {
-		return addressService.updateBillingAddress(updateBillingAddressRequest);
+	@PostMapping("updateIndividualCustomerBillingAddress")
+	public Result updateIndividualCustomerBillingAddress(@RequestBody UpdateIndividualCustomerBillingAddressRequest updateIndividualCustomerBillingAddressRequest) {
+		return addressService.updateIndividualCustomerBillingAddress(updateIndividualCustomerBillingAddressRequest);
+	}
+	
+	@PostMapping("updateCorporateCustomerContactAddress")
+	public Result updateCorporateCustomerContactAddress(@RequestBody UpdateCorporateCustomerContactAddressRequest updateCorporateCustomerContactAddressRequest) {
+		return addressService.updateCorporateCustomerContactAddress(updateCorporateCustomerContactAddressRequest);
+	}
+	
+	@PostMapping("updateCorporateCustomerBillingAddress")
+	public Result updateCorporateCustomerBillingAddress(@RequestBody UpdateCorporateCustomerBillingAddressRequest updateCorporateCustomerBillingAddressRequest) {
+		return addressService.updateCorporateCustomerBillingAddress(updateCorporateCustomerBillingAddressRequest);
 	}
 	
 	@GetMapping("getall")

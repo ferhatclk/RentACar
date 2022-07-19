@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kodlamaio.rentAcar.bussines.abstracts.AdditionalItemService;
 import com.kodlamaio.rentAcar.bussines.abstracts.OrderedAdditionalItemService;
+import com.kodlamaio.rentAcar.bussines.abstracts.RentalService;
 import com.kodlamaio.rentAcar.bussines.request.orderedAdditionalItems.CreateOrderedAdditionalItemRequest;
 import com.kodlamaio.rentAcar.bussines.request.orderedAdditionalItems.DeleteOrderedAdditionalItemRequest;
 import com.kodlamaio.rentAcar.bussines.request.orderedAdditionalItems.UpdateOrderedAdditionalItemRequest;
@@ -18,9 +20,7 @@ import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
-import com.kodlamaio.rentAcar.dataAccess.abstracts.AdditionalItemRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.OrderedAdditionalItemRepository;
-import com.kodlamaio.rentAcar.dataAccess.abstracts.RentalRepository;
 import com.kodlamaio.rentAcar.entities.concretes.AdditionalItem;
 import com.kodlamaio.rentAcar.entities.concretes.OrderedAdditionalItem;
 import com.kodlamaio.rentAcar.entities.concretes.Rental;
@@ -28,32 +28,32 @@ import com.kodlamaio.rentAcar.entities.concretes.Rental;
 @Service
 public class OrderedAdditionalItemManager implements OrderedAdditionalItemService{
 	
+	private OrderedAdditionalItemRepository orderedAdditionalItemRepository;
+	
 	private ModelMapperService modelMapperService;
 
-	private OrderedAdditionalItemRepository orderedAdditionalItemRepository;
+	private RentalService rentalService;
 
-	private RentalRepository rentalRepository;
-
-	private AdditionalItemRepository additionalItemRepository;
+	private AdditionalItemService additionalItemService;
 
 	@Autowired
 	public OrderedAdditionalItemManager(ModelMapperService modelMapperService, OrderedAdditionalItemRepository orderedAdditionalItemRepository,
-			RentalRepository rentalRepository, AdditionalItemRepository additionalItemRepository) {
+			RentalService rentalService, AdditionalItemService additionalItemService) {
 		this.modelMapperService = modelMapperService;
 		this.orderedAdditionalItemRepository = orderedAdditionalItemRepository;
-		this.rentalRepository = rentalRepository;
-		this.additionalItemRepository = additionalItemRepository;
+		this.rentalService = rentalService;
+		this.additionalItemService = additionalItemService;
 	}
 
 	@Override
 	public Result add(CreateOrderedAdditionalItemRequest createAdditionalRequest) {
-		checkIfAdditionalItem(createAdditionalRequest.getAdditionalItemId());
+//		checkIfAdditionalItem(createAdditionalRequest.getAdditionalItemId());
+		AdditionalItem additionalItem = additionalItemService.getByAdditionalItemId(createAdditionalRequest.getAdditionalItemId());
+		Rental rental = rentalService.getByRentalId(createAdditionalRequest.getRentalId());
 		OrderedAdditionalItem additional = modelMapperService.forRequest().map(createAdditionalRequest, OrderedAdditionalItem.class);
-		Rental rental = rentalRepository.findById(createAdditionalRequest.getRentalId());
+		
 		additional.setDays(rental.getTotalDays());
 
-		AdditionalItem additionalItem = additionalItemRepository.findById(createAdditionalRequest.getAdditionalItemId());
-		
 		double price = additionalItem.getPrice();
 		additional.setTotalPrice(additional.getDays() * price);
 			
@@ -62,17 +62,20 @@ public class OrderedAdditionalItemManager implements OrderedAdditionalItemServic
 	}
 
 	@Override
-	public Result delete(DeleteOrderedAdditionalItemRequest deleteAdditionalRequest) {
-		orderedAdditionalItemRepository.deleteById(deleteAdditionalRequest.getId());
+	public Result delete(DeleteOrderedAdditionalItemRequest deleteOrderedAdditionalItemRequest) {
+		checkIfOrderedAdditionalItem(deleteOrderedAdditionalItemRequest.getId());
+		orderedAdditionalItemRepository.deleteById(deleteOrderedAdditionalItemRequest.getId());
 		return new SuccessResult("ADDITIONAL.DELETED");
 	}
 
 	@Override
-	public Result update(UpdateOrderedAdditionalItemRequest updateAdditionalRequest) {
-		checkIfAdditionalItem(updateAdditionalRequest.getAdditionalItemId());
-		AdditionalItem additionalItem = additionalItemRepository.findById(updateAdditionalRequest.getAdditionalItemId());
-		OrderedAdditionalItem additional = modelMapperService.forRequest().map(updateAdditionalRequest, OrderedAdditionalItem.class);
-		Rental rental = rentalRepository.findById(updateAdditionalRequest.getRentalId());
+	public Result update(UpdateOrderedAdditionalItemRequest updateOrderedAdditionalItemRequest) {
+		checkIfOrderedAdditionalItem(updateOrderedAdditionalItemRequest.getId());
+		AdditionalItem additionalItem = additionalItemService.getByAdditionalItemId(updateOrderedAdditionalItemRequest.getAdditionalItemId());
+		Rental rental = rentalService.getByRentalId(updateOrderedAdditionalItemRequest.getRentalId());
+		
+		OrderedAdditionalItem additional = modelMapperService.forRequest().map(updateOrderedAdditionalItemRequest, OrderedAdditionalItem.class);
+		
 		
 		additional.setDays(rental.getTotalDays());
 		
@@ -93,21 +96,27 @@ public class OrderedAdditionalItemManager implements OrderedAdditionalItemServic
 
 	@Override
 	public DataResult<GetByIdOrderedAdditionalItemResponse> getById(int id) {
-		OrderedAdditionalItem additional = orderedAdditionalItemRepository.findById(id);
-		GetByIdOrderedAdditionalItemResponse response = modelMapperService.forResponse().map(additional, GetByIdOrderedAdditionalItemResponse.class);
+		checkIfOrderedAdditionalItem(id);
+		OrderedAdditionalItem orderedAdditionalItem = orderedAdditionalItemRepository.findById(id);
+		GetByIdOrderedAdditionalItemResponse response = modelMapperService.forResponse().map(orderedAdditionalItem, GetByIdOrderedAdditionalItemResponse.class);
 		
 		return new SuccessDataResult<GetByIdOrderedAdditionalItemResponse>(response);
 	}
 	
 	@Override
 	public OrderedAdditionalItem getByOrderedAdditionalItemId(int id) {
-		checkIfAdditionalItem(id);
+		checkIfOrderedAdditionalItem(id);
 		return orderedAdditionalItemRepository.findById(id);
 	}
 	
-	private void checkIfAdditionalItem(int id) {
-		AdditionalItem additionalItem = additionalItemRepository.findById(id);
-		if(additionalItem == null) throw new BusinessException("ADDITIONAL.ITEM.NOT.FOUND!!!");
+	private void checkIfOrderedAdditionalItem(int id) {
+		OrderedAdditionalItem orderedAdditionalItem = orderedAdditionalItemRepository.findById(id);
+		if(orderedAdditionalItem == null) throw new BusinessException("ORDERED.ADDITIONAL.ITEM.NOT.FOUND");
 	}
+	
+//	private void checkIfAdditionalItem(int id) {
+//		AdditionalItem additionalItem = additionalItemRepository.findById(id);
+//		if(additionalItem == null) throw new BusinessException("ADDITIONAL.ITEM.NOT.FOUND!!!");
+//	}
 
 }

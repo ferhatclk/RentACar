@@ -14,8 +14,10 @@ import com.kodlamaio.rentAcar.bussines.request.invoices.CreateAdditionalInvoiceR
 import com.kodlamaio.rentAcar.bussines.request.invoices.CreateRentalInvoiceRequest;
 import com.kodlamaio.rentAcar.bussines.request.invoices.DeleteAdditionalInvoiceRequest;
 import com.kodlamaio.rentAcar.bussines.request.invoices.DeleteRentalInvoiceRequest;
-import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllAdditionalInvoiceResponse;
-import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllRentalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllCorporateAdditionalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllCorporateRentalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllIndividualAdditionalInvoicesResponse;
+import com.kodlamaio.rentAcar.bussines.response.invoices.GetAllIndividualRentalInvoicesResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 
@@ -70,13 +72,23 @@ public class InvoicesController {
 		return this.invoiceService.deleteForCorporateCustomerAdditionalInvoice(deleteInvoiceRequest);
 	}
 	
-	@GetMapping("getalladditional")
-	public DataResult<List<GetAllAdditionalInvoiceResponse>> additionalGetAll(){
-		return this.invoiceService.additionalGetAll();
+	@GetMapping("getallIndividualAdditional")
+	public DataResult<List<GetAllIndividualAdditionalInvoicesResponse>> getAllIndividualAdditionalInvoice(){
+		return this.invoiceService.getAllIndividualAdditionalInvoice();
 	}
 	
-	@GetMapping("getallrental")
-	public DataResult<List<GetAllRentalInvoicesResponse>> rentalGetAll(){
-		return this.invoiceService.rentalGetAll();
+	@GetMapping("getallIndividualRental")
+	public DataResult<List<GetAllIndividualRentalInvoicesResponse>> getAllIndividualRentalInvoice(){
+		return this.invoiceService.getAllIndividualRentalInvoice();
+	}
+	
+	@GetMapping("getallCorporateAdditional")
+	public DataResult<List<GetAllCorporateAdditionalInvoicesResponse>> getAllCorporateAdditionalInvoice(){
+		return this.invoiceService.getAllCorporateAdditionalInvoice();
+	}
+	
+	@GetMapping("getallCorporateRental")
+	public DataResult<List<GetAllCorporateRentalInvoicesResponse>> getAllCorporateRentalInvoice(){
+		return this.invoiceService.getAllCorporateRentalInvoice();
 	}
 }

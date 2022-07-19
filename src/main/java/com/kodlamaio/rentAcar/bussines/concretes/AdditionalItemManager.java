@@ -12,6 +12,7 @@ import com.kodlamaio.rentAcar.bussines.request.additionalItems.DeleteAdditionalI
 import com.kodlamaio.rentAcar.bussines.request.additionalItems.UpdateAdditionalItemRequest;
 import com.kodlamaio.rentAcar.bussines.response.additionalItems.GetAllAdditionalItemsResponse;
 import com.kodlamaio.rentAcar.bussines.response.additionalItems.GetByIdAdditionalItemResponse;
+import com.kodlamaio.rentAcar.core.utilities.exceptions.BusinessException;
 import com.kodlamaio.rentAcar.core.utilities.mapping.ModelMapperService;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
@@ -42,12 +43,14 @@ public class AdditionalItemManager implements AdditionalItemService{
 
 	@Override
 	public Result delete(DeleteAdditionalItemRequest deleteAdditionalItemRequest) {
+		checkIfAdditionalItem(deleteAdditionalItemRequest.getId());
 		additionalItemRepository.deleteById(deleteAdditionalItemRequest.getId());
 		return new SuccessResult("ADDITIONAL.DELETED");
 	}
 
 	@Override
 	public Result update(UpdateAdditionalItemRequest updateAdditionalItemRequest) {
+		checkIfAdditionalItem(updateAdditionalItemRequest.getId());
 		AdditionalItem additionalItem = this.modelMapperService.forRequest().map(updateAdditionalItemRequest, AdditionalItem.class);
 		additionalItemRepository.save(additionalItem);
 		return new SuccessResult("ADDITIONAL.UPDATED");
@@ -63,10 +66,21 @@ public class AdditionalItemManager implements AdditionalItemService{
 
 	@Override
 	public DataResult<GetByIdAdditionalItemResponse> getById(int id) {
+		checkIfAdditionalItem(id);
 		AdditionalItem additionalItem = this.additionalItemRepository.findById(id);
 		GetByIdAdditionalItemResponse response = this.modelMapperService.forResponse().map(additionalItem, GetByIdAdditionalItemResponse.class);
 		return new SuccessDataResult<GetByIdAdditionalItemResponse>(response,"ADDITIONAL.LISTED.GET.BY.ID");
 	}
 
+	@Override
+	public AdditionalItem getByAdditionalItemId(int id) {
+		// TODO Auto-generated method stub
+		return additionalItemRepository.findById(id);
+	}
+	
+	private void checkIfAdditionalItem(int id) {
+		AdditionalItem additionalItem = additionalItemRepository.findById(id);
+		if(additionalItem == null) throw new BusinessException("ADDITIONAL.ITEM.NOT.FOUND");
+	}
 
 }

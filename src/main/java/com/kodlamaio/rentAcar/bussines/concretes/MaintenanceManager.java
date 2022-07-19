@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.kodlamaio.rentAcar.bussines.abstracts.CarService;
 import com.kodlamaio.rentAcar.bussines.abstracts.MaintenanceService;
 import com.kodlamaio.rentAcar.bussines.request.maintenances.CreateMaintenanceRequest;
 import com.kodlamaio.rentAcar.bussines.request.maintenances.DeleteMaintenanceRequest;
@@ -17,7 +18,6 @@ import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
-import com.kodlamaio.rentAcar.dataAccess.abstracts.CarRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.MaintenanceRepository;
 import com.kodlamaio.rentAcar.entities.concretes.Car;
 import com.kodlamaio.rentAcar.entities.concretes.Maintenance;
@@ -29,22 +29,21 @@ public class MaintenanceManager implements MaintenanceService{
 
 	private ModelMapperService modelMapperService;
 
-	private CarRepository carRepository;
+	private CarService carService;
 
-	public MaintenanceManager(MaintenanceRepository maintenanceRepository, CarRepository carRepository, ModelMapperService modelMapperService) {
+	public MaintenanceManager(MaintenanceRepository maintenanceRepository, CarService carService, ModelMapperService modelMapperService) {
 		this.maintenanceRepository = maintenanceRepository;
-		this.carRepository = carRepository;
+		this.carService = carService;
 		this.modelMapperService = modelMapperService;
 	}
 
 	@Override
 	public Result add(CreateMaintenanceRequest createMaintenanceRequest) {
-		checkIfCar(createMaintenanceRequest.getCarId());
+//		checkIfCar(createMaintenanceRequest.getCarId());
 		checkIfState(createMaintenanceRequest.getCarId());
+		Car car = carService.getByCarId(createMaintenanceRequest.getCarId());
 		Maintenance maintenance = this.modelMapperService.forRequest().map(createMaintenanceRequest, Maintenance.class);
 		
-		Car car = carRepository.findById(createMaintenanceRequest.getCarId());
-
 		car.setState(2);
 		maintenance.setCar(car);
 		
@@ -57,21 +56,19 @@ public class MaintenanceManager implements MaintenanceService{
 		Maintenance maintenance = maintenanceRepository.findById(deleteMaintenanceRequest.getId());
 		Car car = maintenance.getCar();
 		car.setState(1);
-		carRepository.save(car);
 		maintenanceRepository.deleteById(deleteMaintenanceRequest.getId());
 		return new SuccessResult("MAINTENANCE.DELETED");
 	}
 
 	@Override
 	public Result update(UpdateMaintenenceRequest updateMaintenenceRequest) {
-		checkIfCar(updateMaintenenceRequest.getCarId());
+//		checkIfCar(updateMaintenenceRequest.getCarId());
 		checkIfState(updateMaintenenceRequest.getCarId());
+		Car car = carService.getByCarId(updateMaintenenceRequest.getCarId());
 		stateCar(updateMaintenenceRequest.getId());
 		Maintenance maintenance = this.modelMapperService.forRequest().map(updateMaintenenceRequest, Maintenance.class);
 		
-		Car car = this.carRepository.findById(updateMaintenenceRequest.getCarId());
 		car.setState(2);
-//		carRepository.save(car);
 		maintenance.setCar(car);
 
 		maintenanceRepository.save(maintenance);
@@ -81,7 +78,6 @@ public class MaintenanceManager implements MaintenanceService{
 
 	@Override
 	public DataResult<GetMaintenanceResponse> getById(int id) {
-		checkIfCar(id);
 		Maintenance maintenance = maintenanceRepository.findById(id);
 		GetMaintenanceResponse response = this.modelMapperService.forResponse().map(maintenance, GetMaintenanceResponse.class);
 		return new SuccessDataResult<GetMaintenanceResponse>(response,"GET_BY_ID");
@@ -95,15 +91,15 @@ public class MaintenanceManager implements MaintenanceService{
 		return new SuccessDataResult<List<GetAllMaintenancesResponse>>(response,"MAINTENACES.LISTED");
 	}
 	
-	private void checkIfCar(int id) {
-		Car car = carRepository.findById(id);
-		if(car==null) {
-			throw new BusinessException("CAR.NOT.AVAILABLE!!!!");
-		}
-	}
+//	private void checkIfCar(int id) {
+//		Car car = carRepository.findById(id);
+//		if(car==null) {
+//			throw new BusinessException("CAR.NOT.AVAILABLE!!!!");
+//		}
+//	}
 	
 	private void checkIfState(int id) {
-		Car car = carRepository.findById(id);
+		Car car = carService.getByCarId(id);
 		if(car.getState()==3) {
 			throw new BusinessException("STATE.DOES.NOT.FIT!!!!");
 		}

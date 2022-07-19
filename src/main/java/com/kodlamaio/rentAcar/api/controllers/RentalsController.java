@@ -16,8 +16,10 @@ import com.kodlamaio.rentAcar.bussines.request.rentals.DeleteCorporateCustomerRe
 import com.kodlamaio.rentAcar.bussines.request.rentals.DeleteIndividualCustomerRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.UpdateCorporateCustomerRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.UpdateIndividualCustomerRentalRequest;
-import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllRentalsResponse;
-import com.kodlamaio.rentAcar.bussines.response.rentals.GetRentalResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllCorporateCustomerRentalsResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllIndividualCustomerRentalsResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetByIdCorporateCustomerRentalResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetByIdIndividualCustomerRentalResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 
@@ -61,14 +63,24 @@ public class RentalsController {
 		return rentalService.updateForCorporate(updateCorporateCustomerRentalRequest);
 	}
 	
-	@GetMapping("/getall")
-	public DataResult<List<GetAllRentalsResponse>> getAll(GetAllRentalsResponse getAllRentalsResponse){
-		return rentalService.getAll();
+	@GetMapping("/getallForIndividual")
+	public DataResult<List<GetAllIndividualCustomerRentalsResponse>> getAllForIndividualRentals(GetAllIndividualCustomerRentalsResponse getAllIndividualCustomerRentalsResponse){
+		return rentalService.getAllForIndividualRentals();
 	}
 	
-	@GetMapping("/getbyid")
-	public DataResult<GetRentalResponse> getById(int id){
-		return rentalService.getById(id);
+	@GetMapping("/getallForCorporate")
+	public DataResult<List<GetAllCorporateCustomerRentalsResponse>> getAllForCorporateRentals(GetAllCorporateCustomerRentalsResponse getAllCorporateCustomerRentalsResponse){
+		return rentalService.getAllForCorporateRentals();
+	}
+	
+	@GetMapping("/getbyidForIndividual")
+	public DataResult<GetByIdIndividualCustomerRentalResponse> getByIdForIndividualRental(int id){
+		return rentalService.getByIdForIndividualRental(id);
+	}
+	
+	@GetMapping("/getbyidForCorporate")
+	public DataResult<GetByIdCorporateCustomerRentalResponse> getByIdForCorporateRental(int id){
+		return rentalService.getByIdForCorporateRental(id);
 	}
 	
 }

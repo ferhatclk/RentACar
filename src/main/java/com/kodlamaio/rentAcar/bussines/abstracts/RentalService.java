@@ -8,8 +8,10 @@ import com.kodlamaio.rentAcar.bussines.request.rentals.DeleteCorporateCustomerRe
 import com.kodlamaio.rentAcar.bussines.request.rentals.DeleteIndividualCustomerRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.UpdateCorporateCustomerRentalRequest;
 import com.kodlamaio.rentAcar.bussines.request.rentals.UpdateIndividualCustomerRentalRequest;
-import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllRentalsResponse;
-import com.kodlamaio.rentAcar.bussines.response.rentals.GetRentalResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllCorporateCustomerRentalsResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetAllIndividualCustomerRentalsResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetByIdCorporateCustomerRentalResponse;
+import com.kodlamaio.rentAcar.bussines.response.rentals.GetByIdIndividualCustomerRentalResponse;
 import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.entities.concretes.Rental;
@@ -24,8 +26,11 @@ public interface RentalService {
 	Result updateForIndividual(UpdateIndividualCustomerRentalRequest updateIndividualCustomerRentalRequest);
 	Result updateForCorporate(UpdateCorporateCustomerRentalRequest updateCorporateCustomerRentalRequest);
 	
-	DataResult<List<GetAllRentalsResponse>> getAll();
-	DataResult<GetRentalResponse> getById(int id);
+	DataResult<List<GetAllIndividualCustomerRentalsResponse>> getAllForIndividualRentals();
+	DataResult<List<GetAllCorporateCustomerRentalsResponse>> getAllForCorporateRentals();
+	
+	DataResult<GetByIdIndividualCustomerRentalResponse> getByIdForIndividualRental(int id);
+	DataResult<GetByIdCorporateCustomerRentalResponse> getByIdForCorporateRental(int id);
 	
 	Rental getByRentalId(int id);
 }

@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.kodlamaio.rentAcar.bussines.abstracts.BrandService;
 import com.kodlamaio.rentAcar.bussines.abstracts.CarService;
+import com.kodlamaio.rentAcar.bussines.abstracts.ColorService;
 import com.kodlamaio.rentAcar.bussines.request.cars.CreateCarRequest;
 import com.kodlamaio.rentAcar.bussines.request.cars.DeleteCarRequest;
 import com.kodlamaio.rentAcar.bussines.request.cars.UpdateCarRequest;
@@ -18,9 +21,7 @@ import com.kodlamaio.rentAcar.core.utilities.result.DataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.Result;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessDataResult;
 import com.kodlamaio.rentAcar.core.utilities.result.SuccessResult;
-import com.kodlamaio.rentAcar.dataAccess.abstracts.BrandRepository;
 import com.kodlamaio.rentAcar.dataAccess.abstracts.CarRepository;
-import com.kodlamaio.rentAcar.dataAccess.abstracts.ColorRepository;
 import com.kodlamaio.rentAcar.entities.concretes.Brand;
 import com.kodlamaio.rentAcar.entities.concretes.Car;
 import com.kodlamaio.rentAcar.entities.concretes.Color;
@@ -32,17 +33,17 @@ public class CarManager implements CarService{
 
 	private ModelMapperService modelMapperService;
 	
-	private BrandRepository brandRepository;
+	private BrandService brandService;
 	
-	private ColorRepository colorRepository;
+	private ColorService colorService;
 	
 	@Autowired
 	public CarManager(CarRepository carRepository,ModelMapperService modelMapperService,
-			BrandRepository brandRepository, ColorRepository colorRepository) {
+			BrandService brandService, ColorService colorService) {
 		this.carRepository = carRepository;
 		this.modelMapperService = modelMapperService;
-		this.brandRepository = brandRepository;
-		this.colorRepository = colorRepository;
+		this.brandService = brandService;
+		this.colorService = colorService;
 	}
 	
 	@Override
@@ -50,8 +51,18 @@ public class CarManager implements CarService{
 		checkIfBrand(createCarRequest.getBrandId());
 		checkIfExistCount(createCarRequest.getBrandId());
 		checkIfColor(createCarRequest.getColorId());
-		Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
-		car.setState(1);
+//		Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
+		Car car = Car.builder()
+				.description(createCarRequest.getDescription())
+				.dailyPrice(createCarRequest.getDailyPrice())
+				.findexScore(createCarRequest.getFindexScore())
+				.km(createCarRequest.getKm())
+				.plate(createCarRequest.getPlate())
+				.brand(brandService.getByBrandId(createCarRequest.getBrandId()))
+				.color(colorService.getByColorId(createCarRequest.getColorId()))
+				.state(1)
+				.build();
+//		car.setState(1);
 		this.carRepository.save(car);
 		return new SuccessResult("CAR.ADDED");
 		
@@ -79,12 +90,20 @@ public class CarManager implements CarService{
 		carRepository.save(car);
 		return new SuccessResult("CAR.UPDATE");
 	}
-
+	
+//	@Cacheable("cars")
 	@Override
 	public DataResult<List<GetAllCarsResponse>> getAll() {
 		List<Car> cars = this.carRepository.findAll();
 		List<GetAllCarsResponse> response = cars.stream().map(car -> this.modelMapperService.forResponse()
 				.map(car, GetAllCarsResponse.class)).collect(Collectors.toList());
+		try {
+			Thread.sleep(1000 * 4);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			
+		}
+		
 		return new SuccessDataResult<List<GetAllCarsResponse>>(response);
 	}
 
@@ -109,14 +128,14 @@ public class CarManager implements CarService{
 	}
 	
 	private void checkIfBrand(int id) {
-		Brand brand = brandRepository.findById(id);
+		Brand brand = brandService.getByBrandId(id);
 		if(brand == null) {
 			throw new BusinessException("BRAND.NOT.FOUND!!!");
 		}
 	}
 	
 	private void checkIfColor(int id) {
-		Color color = colorRepository.findById(id);
+		Color color = colorService.getByColorId(id);
 		if(color == null) throw new BusinessException("BRAND.NOT.FOUND!!!");
 	}
 	
